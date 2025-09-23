@@ -20,7 +20,7 @@ lemma aux_pow : ∀ m > 0, (∀ k, ¬ m = 2 ^ k) → ∃ p, p % 2 = 1 ∧ p.Prim
     apply dvd_trans pdvd; apply Nat.div_dvd_of_dvd
     apply Nat.ordProj_dvd
 
--- Prove a lemma that $(n ^ k + 1) / (n + 1)$ is always odd when $k$ is odd
+-- Prove a lemma that $(n ^ k + 1) / (n + 1)$ is odd when $k$ is odd
 lemma lm_par : ∀ n k, Odd k → Odd ((n ^ k + 1) / (n + 1)) := by
   intro n k kpar; rw [Nat.odd_iff] at kpar
 -- Rewrite the expression in question to a geometric sum
