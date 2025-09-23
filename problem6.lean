@@ -2,7 +2,8 @@ import Mathlib
 
 open Finset
 
-/-The rank of a rational number $q$ is the unique $k$ for which $q=\frac{1}{a_{1}}+\cdots+\frac{1}{a_{k}}$, where each $a_{i}$ is the smallest positive integer such that $q \geq \frac{1}{a_{1}}+\cdots+\frac{1}{a_{i}}$. Let $q$ be the largest rational number less than $\frac{1}{4}$ with rank 3 , and suppose the expression for $q$ is $\frac{1}{a_{1}}+\frac{1}{a_{2}}+\frac{1}{a_{3}}$. Find the ordered triple $\left(a_{1}, a_{2}, a_{3}\right)$.-/
+/-The rank of a rational number $q$ is the unique $k$ for which $q=\frac{1}{a_{1}}+\cdots+\frac{1}{a_{k}}$, where each $a_{i}$ is the smallest positive integer such that $q \geq \frac{1}{a_{1}}+\cdots+\frac{1}{a_{i}}$.
+Let $q$ be the largest rational number less than $\frac{1}{4}$ with rank 3 , and suppose the expression for $q$ is $\frac{1}{a_{1}}+\frac{1}{a_{2}}+\frac{1}{a_{3}}$. Find the ordered triple $\left(a_{1}, a_{2}, a_{3}\right)$.-/
 theorem problem6 (rank : ℕ → ℚ → (ℕ → ℕ) → Prop) (hrk : ∀ k q a, rank k q a ↔
     q = ∑ i ∈ Icc 1 k, 1 / (a i : ℚ) ∧ ∀ i ∈ Icc 1 k, IsLeast {n : ℕ | 0 < n ∧
     ∑ x ∈ Icc 1 (i - 1), 1 / (a x : ℚ) + 1 / (n : ℚ) ≤ q} (a i)) : ∀ q a, rank 3 q a →
