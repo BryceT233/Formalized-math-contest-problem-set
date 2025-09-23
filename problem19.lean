@@ -193,7 +193,7 @@ theorem problem19 (n : ℕ) (npos : 0 < n) : (∃ a > 2, ∀ d ≠ n, d ∣ n �
     rw [imp_false, Nat.not_odd_iff_even, hl]
     use 2 ^ (l - 1); rw [← mul_two, ← pow_succ]
     rw [show l-1+1 = l by omega]
--- Deduct $n = p$, contradicts to the fact that $n$ is not a prime
+-- Deduct $n = p$, which is a contradiction because $n$ is not a prime
   simp only [lle, pow_zero] at hl; replace hl := Nat.eq_of_dvd_of_div_eq_one auxdvd hl
   simp only [Nat.add_right_cancel_iff] at hl
   nth_rw 1 [show a / 2 = (a / 2) ^ 1 by simp] at hl
