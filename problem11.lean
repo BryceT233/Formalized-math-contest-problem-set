@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 /- Find all such rational numbers $x$ and $y$ for which the numbers $x+\frac{1}{y}$ and $y+\frac{1}{x}$ are natural.-/
