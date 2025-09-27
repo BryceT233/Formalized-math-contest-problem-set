@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 -- Prove by induction that $2^(4*k+2)$ modulo $20$ is $4$ for any $k$
