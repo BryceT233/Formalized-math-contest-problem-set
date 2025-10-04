@@ -3,7 +3,7 @@ import Mathlib
 open Function Finset Classical
 
 /- Let $S$ be a finite set, and let $\mathcal{A}$ be the set of all functions from $S$ to $S$. Let $f$ be an element of $\mathcal{A}$, and let $T=f(S)$ be the image of $S$ under $f$.
-Suppose that $f \circ g \circ f \neq g \circ f \circ g$ for every $g$ in $\mathcal{A}$ with $g \neq f$. Show that $f(T)=T$. (India) -/
+Suppose that $f \circ g \circ f \neq g \circ f \circ g$ for every $g$ in $\mathcal{A}$ with $g \neq f$. Show that $f(T)=T$. -/
 theorem problem70 {S : Type u} [Sfin : Fintype S] (f : S → S) {T : Finset S}
     (hT : T = image f Finset.univ) (hf : ∀ g : S → S, g ≠ f → f ∘ g ∘ f ≠ g ∘ f ∘ g) :
     image f T = T := by
