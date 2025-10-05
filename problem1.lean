@@ -1,9 +1,3 @@
-/-
-Copyright (c) 2025 . All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
--/
-
 import Mathlib
 
 open Real
@@ -36,7 +30,9 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
 -- Compute the square of the product of the norms of $A$ and $B$
   have aux1 : (‖A‖ * ‖B‖) ^ 2 = (8 + (∑ i, x i) * ∑ i, 1 / x i) * (x 0 * x 1 + x 0 * x 2 + x 0 * x 3 + x 1 * x 2 + x 1 * x 3 + x 2 * x 3) := by
     repeat rw [EuclideanSpace.norm_eq, Fin.sum_univ_six, Fin.sum_univ_four]
-    simp [A, B]; rw [mul_pow, sq_sqrt, sq_sqrt]
+    simp only [Fin.isValue, Matrix.cons_val_zero, norm_div, norm_eq_abs, Matrix.cons_val_one,
+      Matrix.cons_val, sq_abs, one_div, A, B]
+    rw [mul_pow, sq_sqrt, sq_sqrt]
     repeat rw [div_pow]
     repeat rw [sq_abs, sq_sqrt]
     rw [mul_right_cancel_iff_of_pos]
@@ -60,27 +56,26 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
       rw [funext_iff] at hr; simp at hr
       split_ands
       · have h := hr 1; have h' := hr 3
-        simp only [Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero, Matrix.cons_val] at h h'
-        rw [mul_div, eq_div_iff] at h h'
-        rw [← pow_two, sq_sqrt, ← div_eq_iff] at h h'
-        rw [← inv_inj, inv_div] at h h'
+        simp only [Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero,
+          Matrix.cons_val] at h h'
+        rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
+          ← inv_inj, inv_div] at h h'
         rw [← h, add_div, add_div] at h'
         repeat rw [div_mul_cancel_left₀, div_mul_cancel_right₀] at h'
         simp only [Fin.isValue, add_right_inj, inv_inj] at h'; exact h'
         all_goals positivity
       · have h := hr 0; have h' := hr 3
         simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val] at h h'
-        rw [mul_div, eq_div_iff] at h h'
-        rw [← pow_two, sq_sqrt, ← div_eq_iff] at h h'
-        rw [← inv_inj, inv_div] at h h'
+        rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
+          ← inv_inj, inv_div] at h h'
         rw [← h, add_div, add_div] at h'
         repeat rw [div_mul_cancel_left₀, div_mul_cancel_right₀] at h'
         rw [add_comm] at h'; simp only [Fin.isValue, add_right_inj, inv_inj] at h'
         exact h'; all_goals positivity
       have h := hr 0; have h' := hr 4
       simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val] at h h'
-      rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff] at h h'
-      rw [← inv_inj, inv_div] at h h'
+      rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
+        ← inv_inj, inv_div] at h h'
       rw [← h, add_div, add_div] at h'
       repeat rw [div_mul_cancel_left₀, div_mul_cancel_right₀] at h'
       rw [add_comm] at h'
@@ -96,14 +91,13 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
     fin_cases i; any_goals simp
     all_goals positivity
 -- Use what we have proved so far to finish the goal
-  rw [ge_iff_le, div_le_iff₀, eq_div_iff, ← aux2, ← aux1]
-  rw [pow_le_pow_iff_left₀, pow_left_inj₀]
+  rw [ge_iff_le, div_le_iff₀, eq_div_iff, ← aux2, ← aux1,
+    pow_le_pow_iff_left₀, pow_left_inj₀]
   nth_rw 2 [abs_eq_self.mpr] at CS_eq
   constructor; exact CS_le; constructor
   · intro h; simp only [h, true_iff] at CS_eq
-    rw [← aux3]; exact CS_eq.right
-  intro h; rw [← aux3] at h; symm
-  rw [CS_eq]; exact ⟨Ane, h⟩
+    grind
+  grind
 -- Finish the rest trivial positivity goals
   any_goals positivity
   apply ne_of_gt; rw [abs_pos]
