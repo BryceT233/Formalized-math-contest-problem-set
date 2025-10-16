@@ -6,7 +6,7 @@ Authors: Bingyu Xia
 
 import Mathlib
 
-/-2. Prove that any integer $r>2$ is composite if and only if at least one of the following two statements is true:
+/- Prove that any integer $r>2$ is composite if and only if at least one of the following two statements is true:
 a) $r=2^{s}$ for some $s \in\{2,3, \ldots\}$,
 b) $r=\frac{u}{2}(2 v-u+1)$ for some $u, v \in\{3,4, \ldots\},(u \leq v)$.-/
 theorem problem101 {r} (rgt : 2 < (r : ℕ)) : ¬ r.Prime ↔ (∃ s ≥ 2, r = 2 ^ s) ∨
