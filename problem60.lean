@@ -13,9 +13,7 @@ theorem problem60 (M : ℕ) : #(filter (fun i : ℕ =>
   suffices : image (fun n => n ^ 2) ((M.sqrt + 1).primesBelow) =
   filter (fun i : ℕ => (i.divisors.sum id) = 1 + √i + i) (Icc 1 M)
   · rw [← this, card_image_of_injective];
-    intro i j hij; simp only [zero_le, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      pow_left_inj₀] at hij
-    exact hij
+    intro _ _ h; simpa using h
 -- Prove that the square function maps one set to the other
   simp only [Nat.primesBelow, id_eq, Nat.cast_sum, Finset.ext_iff, mem_image, mem_filter, mem_range,
     and_assoc, mem_Icc]

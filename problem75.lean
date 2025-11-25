@@ -12,10 +12,8 @@ theorem problem75 : let S := {p ∈ (Icc (2 : ℕ) 2021) ×ˢ (Icc (2 : ℕ) 202
     #S = 43 := by
 -- It suffices to show that $S$ is the image of $[2, 44]$ under the map that sends $k$ to $(k, k^2)$
   intro S; suffices : S = image (fun k => (k, k ^ 2)) (Icc 2 44)
-  · rw [this, card_image_of_injective]
-    simp; intro p q hpq; simp only [Prod.mk.injEq, zero_le, ne_eq, OfNat.ofNat_ne_zero,
-      not_false_eq_true, pow_left_inj₀, and_self] at hpq
-    exact hpq
+  · rw [this, card_image_of_injective]; simp
+    intro _ _ h; simpa using h
   simp only [Finset.ext_iff, mem_filter, mem_product, mem_Icc, and_assoc, mem_image, Prod.forall,
     Prod.mk.injEq, existsAndEq, true_and, and_congr_right_iff, S]
   intro a b age; constructor

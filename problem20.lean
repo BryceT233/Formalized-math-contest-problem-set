@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset
@@ -122,9 +128,9 @@ theorem problem20 : {n : ℕ | 2021 ∣ n ∧ #n.divisors = 2021}.ncard = 2 := b
       · apply dvd_trans _ hdvd; norm_num
       exact hx
     rw [hcd] at this; simp only [mem_insert, mem_singleton] at this; omega
-    · simp only [mem_singleton]; exact hpq
-    · apply eq_true_intro; exact qmem
-    · apply eq_true_intro; exact pmem
+    · simpa using hpq
+    · simpa using qmem
+    · simpa using pmem
     · rw [disjoint_filter]; intros; omega
     intro h; simp only [h, Nat.divisors_zero, card_empty, OfNat.zero_ne_ofNat] at hcd
 -- Conversely, if $x$ is one of the given number, it is straightforward to check that required conditions hold true

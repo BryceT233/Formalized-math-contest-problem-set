@@ -82,7 +82,9 @@ theorem problem32 (s : ℕ) (hs : s = 2014) : {t : ℝ | ∃ a : ℕ → ℝ, a 
     use a; have aux : (((2 * k - 1) : ℕ) : ℝ) = (2 : ℝ) * k - 1 := by
       rw [Nat.cast_sub]; push_cast; rfl
       omega
-    split_ands; simp [a]; exact ha
+    split_ands
+    · simp [a]
+    · exact ha
     -- Prove that $a_2016 = 0$
     · simp only [ha', hs, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
         pow_eq_zero_iff, Set.mem_setOf_eq, θ]
@@ -162,7 +164,7 @@ theorem problem32 (s : ℕ) (hs : s = 2014) : {t : ℝ | ∃ a : ℕ → ℝ, a 
 -- Apply Intermediate Value Theorem to find $θ$ such that $a 0 = sin θ ^ 2$
   have hcont : ContinuousOn (fun x => sin x ^ 2) (Set.Icc 0 (π / 2)) := by
     apply Continuous.continuousOn
-    apply Continuous.pow; exact continuous_sin
+    fun_prop
   have IVT := intermediate_value_Ioo (show 0 ≤ π / 2 by positivity) hcont
   rw [Set.subset_def] at IVT
   specialize IVT (a 0) a0bd; simp only [Set.mem_image, Set.mem_Ioo, and_assoc] at IVT
@@ -181,11 +183,11 @@ theorem problem32 (s : ℕ) (hs : s = 2014) : {t : ℝ | ∃ a : ℕ → ℝ, a 
   rcases a2016 with ⟨k, hk⟩
   rw [show 2016 = s+2 by omega] at hk
 -- Use `hk`, `θpos` and `θlt` to find bounds of $k$
-  rw [← mul_lt_mul_left (show (0:ℝ)<2^(s+2) by positivity)] at θpos θlt
+  rw [← mul_lt_mul_iff_right₀ (show (0:ℝ)<2^(s+2) by positivity)] at θpos θlt
   rw [mul_zero, ← hk, mul_pos_iff_of_pos_right] at θpos
   rw [← hk, mul_comm, mul_div] at θlt
   nth_rw 2 [mul_comm] at θlt; rw [← mul_div] at θlt
-  rw [mul_lt_mul_left, pow_succ, mul_div_cancel_right₀] at θlt
+  rw [mul_lt_mul_iff_right₀, pow_succ, mul_div_cancel_right₀] at θlt
   norm_cast at θpos θlt; push_cast at θlt
 -- Use `hmin` to show that $k$ is odd
   have kodd : k % 2 = 1 := by

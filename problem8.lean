@@ -1,9 +1,3 @@
-/-
-Copyright (c) 2025 . All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
--/
-
 import Mathlib
 
 open Finset Classical
@@ -277,7 +271,7 @@ theorem problem8 (p : (ℕ → ℕ) → Prop) (hp : ∀ f, p f ↔ f 0 = 0 ∧
         simp only [ih, add_le_add_iff_left]
         rw [← ih]; apply pmono'; any_goals simp
         omega; rw [← mul_two, ← pow_succ]
-        rw [show m-1+1 = m by omega]; exact ale
+        rwa [show m-1+1 = m by omega]
       _ < _ := by
         rw [← mul_two, ← pow_succ, show m-2+1 = m-1 by omega]
         simp

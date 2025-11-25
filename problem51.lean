@@ -38,7 +38,7 @@ theorem problem51 (f : ℤ → ℤ) : (∀ x y, f (4 * x + 3 * y) =
       · specialize this f heq h1 h2 h3 (-x) key (by omega) (by omega)
         rw [h2, neg_eq_iff_eq_neg] at this
         rw [this]; ring
-      rw [show x = |x| by rw [abs_eq_self.mpr xpos]]
+      rw [← abs_eq_self.mpr xpos]
       rw [Int.abs_eq_natAbs, ← Int.mul_ediv_add_emod x.natAbs 5]
       rw [show (x.natAbs:ℤ)/5 = ((x.natAbs/5):ℕ) by rfl]
       rw [key]; simp only [Nat.cast_natAbs, abs_eq_self.mpr xpos, Int.cast_eq, Set.mem_Icc]

@@ -54,15 +54,15 @@ theorem problem46 {p n : ℕ} (ppr : p.Prime) (npos : 0 < n) :
   rw [hx, hy, show (x*g)^2+y*g*(x*g) = g^2*x*(x+y) by ring] at hr
   replace hdvd : 4 * d ∣ p * (2 * n) ^ 2 := by
     rw [show p * (2 * n) ^ 2 = 4 * (p * n ^ 2) by ring]
-    rw [mul_dvd_mul_iff_left]; exact hdvd
+    rwa [mul_dvd_mul_iff_left]
     simp
   rw [hy, hr, show 4*(g^2*x*(x+y)) = 4*x*(x+y)*g^2 by ring] at hdvd
   rw [mul_pow, ← mul_assoc, mul_dvd_mul_iff_right] at hdvd
 -- Prove that $x$ divides $p$, therefore it has to be $1$ or $p$
   have xeq : x ∣ p := by
     have : x.Coprime (y ^ 2) := by
-      rw [Nat.coprime_pow_right_iff]
-      exact copr; simp
+      rwa [Nat.coprime_pow_right_iff]
+      simp
     rw [← Nat.Coprime.dvd_mul_right this]
     apply dvd_trans _ hdvd
     rw [mul_comm, ← mul_assoc]; simp
@@ -70,8 +70,8 @@ theorem problem46 {p n : ℕ} (ppr : p.Prime) (npos : 0 < n) :
   have yeq : x + y ∣ p := by
     have : (x + y).Coprime (y ^ 2) := by
       rw [Nat.coprime_pow_right_iff]
-      rw [Nat.coprime_add_self_left]
-      exact copr; simp
+      rwa [Nat.coprime_add_self_left]
+      simp
     rw [← this.dvd_mul_right]
     apply dvd_trans _ hdvd
     simp

@@ -6,7 +6,7 @@ Authors: Bingyu Xia
 
 import Mathlib
 
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 1000000
 
 open Finset
 
@@ -40,10 +40,14 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
       norm_num; all_goals simp
       all_goals omega
     have sbst1 : T1 ⊆ S := by
-      simp [subset_iff, T1]; split_ands
+      simp only [Fin.isValue, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp, forall_eq,
+        T1]
+      split_ands
       all_goals apply orderEmbOfFin_mem
     have sbst2 : T2 ⊆ S := by
-      simp [subset_iff, T2]; split_ands
+      simp only [Fin.isValue, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp, forall_eq,
+        T2]
+      split_ands
       all_goals apply orderEmbOfFin_mem
   -- Prove by contradiction, specialize `h3` at $T1$ and prove the first statement in `h3` is false
     by_contra!; rcases h3 T1 sbst1 c1 with ⟨r, rmem, hr⟩|⟨r, rmem, hr⟩
@@ -52,7 +56,8 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
         · apply Nat.le_of_dvd
           · apply h2; apply orderEmbOfFin_mem
           apply hr; simp [T1]
-        simp [T1] at rmem; rcases rmem with h'|h'|h'|h'
+        simp only [Fin.isValue, mem_insert, mem_singleton, T1] at rmem
+        rcases rmem with h'|h'|h'|h'
         any_goals rw [h']
         all_goals simp [x]
       rw [rmem] at hr; specialize hr (x k) (by simp [T1])
@@ -62,25 +67,32 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
       simp [sum_eq_sum_diff_singleton_add rmem]
     rw [← @Nat.add_left_inj _ _ r, ← this] at hr
     replace rmem : r = x (k + 2) := by
-      simp [T1] at rmem; rcases rmem with h'|h'|h'|h'
-      any_goals simp [h', T1] at hr
+      simp only [Fin.isValue, mem_insert, mem_singleton, T1] at rmem
+      rcases rmem with h'|h'|h'|h'
+      any_goals simp only [Fin.isValue, id_eq, h', T1] at hr
       · repeat rw [sum_insert] at hr
-        simp at hr; have : x k < x (k + 1) := by
-          simp [x]; omega
+        simp only [Fin.isValue, sum_singleton, Nat.add_left_cancel_iff] at hr
+        have : x k < x (k + 1) := by
+          simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, Fin.lt_add_one_iff, Nat.reduceAdd,
+            Fin.reduceLast, x]
+          omega
         omega; all_goals simp [x]; omega
       · repeat rw [sum_insert] at hr
-        simp at hr; have : x (k + 1) < x (k + 2) := by
-          simp [x]; omega
+        simp only [Fin.isValue, sum_singleton] at hr
+        have : x (k + 1) < x (k + 2) := by
+          simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
         omega; all_goals simp [x]; omega
       · exact h'
       repeat rw [sum_insert] at hr
-      simp at hr; have : x 0 < x (k + 2) := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton] at hr
+      have : x 0 < x (k + 2) := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     rw [rmem] at hr; dsimp [T1] at hr
     repeat rw [sum_insert] at hr
   -- Prove that $x_(k+2)=x 0 + x k + x (k + 1)$
-    simp at hr; replace hr : x 0 + x k + x (k + 1) = x (k + 2) := by omega
+    simp only [id_eq, Fin.isValue, sum_singleton] at hr
+    replace hr : x 0 + x k + x (k + 1) = x (k + 2) := by omega
     any_goals simp [x]; omega
     clear r rmem this
   -- Specialize `h3` at $T2$ and prove the first statement in `h3` is false
@@ -90,7 +102,8 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
         · apply Nat.le_of_dvd
           · apply h2; apply orderEmbOfFin_mem
           apply hr; simp [T2]
-        simp [T2] at rmem; rcases rmem with h'|h'|h'|h'
+        simp only [Fin.isValue, mem_insert, mem_singleton, T2] at rmem
+        rcases rmem with h'|h'|h'|h'
         any_goals rw [h']
         all_goals simp [x]
       rw [rmem] at hr; specialize hr (x k) (by simp [T2])
@@ -100,28 +113,37 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
       simp [sum_eq_sum_diff_singleton_add rmem]
     rw [← @Nat.add_left_inj _ _ r, ← this] at hr'
     replace rmem : r = x (k + 3) := by
-      simp [T2] at rmem; rcases rmem with h'|h'|h'|h'
-      any_goals simp [h', T2] at hr'
+      simp only [Fin.isValue, mem_insert, mem_singleton, T2] at rmem
+      rcases rmem with h'|h'|h'|h'
+      any_goals simp only [Fin.isValue, id_eq, h', T2] at hr'
       · repeat rw [sum_insert] at hr'
-        simp at hr'; have : x k < x (k + 1) := by
-          simp [x]; omega
+        simp only [Fin.isValue, sum_singleton, Nat.add_left_cancel_iff] at hr'
+        have : x k < x (k + 1) := by
+          simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, Fin.lt_add_one_iff, Nat.reduceAdd,
+            Fin.reduceLast, x]
+          omega
         omega; all_goals simp [x]; omega
       · repeat rw [sum_insert] at hr'
-        simp at hr'; have : x (k + 1) < x (k + 3) := by
-          simp [x]; omega
+        simp only [Fin.isValue, sum_singleton] at hr'
+        have : x (k + 1) < x (k + 3) := by
+          simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
         omega; all_goals simp [x]; omega
       · exact h'
       repeat rw [sum_insert] at hr'
-      simp at hr'; have : x 0 < x (k + 3) := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton] at hr'
+      have : x 0 < x (k + 3) := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     rw [rmem] at hr'; dsimp [T2] at hr'
     repeat rw [sum_insert] at hr'
   -- Prove that $x_(k+3)=x 0 + x k + x (k + 1)$, but this contradicts to $x_(k+2)< x_(k+3)$
-    simp at hr'; replace hr' : x 0 + x k + x (k + 1) = x (k + 3) := by omega
+    simp only [id_eq, Fin.isValue, sum_singleton] at hr'
+    replace hr' : x 0 + x k + x (k + 1) = x (k + 3) := by omega
     any_goals simp [x]; omega
-    clear r rmem this; have : x (k + 2) < x (k + 3) := by
-      simp [x]; omega
+    clear r rmem this
+    have : x (k + 2) < x (k + 3) := by
+      simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]
+      omega
     omega
 -- If $k$ is greater than $96$, we define two subsets of $S$ by ${x (k - 2), x (k - 1), x k, x 0}$ and ${x (k - 3), x (k - 1), x k, x 0}$
   push_neg at h; by_cases h' : k = 0; rw [h']
@@ -138,11 +160,11 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
     norm_num; all_goals simp
     all_goals omega
   have sbst1 : T1 ⊆ S := by
-    simp [subset_iff, T1]; split_ands
-    all_goals apply orderEmbOfFin_mem
+    simp only [Fin.isValue, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, T1]
+    split_ands; all_goals apply orderEmbOfFin_mem
   have sbst2 : T2 ⊆ S := by
-    simp [subset_iff, T2]; split_ands
-    all_goals apply orderEmbOfFin_mem
+    simp only [Fin.isValue, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp, forall_eq, T2]
+    split_ands; all_goals apply orderEmbOfFin_mem
 -- Prove by contradiction, specialize `h3` at $T1$ and prove the first statement in `h3` is false
   by_contra!; rcases h3 T1 sbst1 c1 with ⟨r, rmem, hr⟩|⟨r, rmem, hr⟩
   · replace rmem : r = x 0 := by
@@ -150,7 +172,8 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
       · apply Nat.le_of_dvd
         · apply h2; apply orderEmbOfFin_mem
         apply hr; simp [T1]
-      simp [T1] at rmem; rcases rmem with h'|h'|h'|h'
+      simp only [Fin.isValue, mem_insert, mem_singleton, T1] at rmem
+      rcases rmem with h'|h'|h'|h'
       any_goals rw [h']
       all_goals simp [x]
     rw [rmem] at hr; specialize hr (x k) (by simp [T1])
@@ -160,25 +183,30 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
     simp [sum_eq_sum_diff_singleton_add rmem]
   rw [← @Nat.add_left_inj _ _ r, ← this] at hr
   replace rmem : r = x k := by
-    simp [T1] at rmem; rcases rmem with h'|h'|h'|h'
+    simp only [Fin.isValue, mem_insert, mem_singleton, T1] at rmem
+    rcases rmem with h'|h'|h'|h'
     any_goals simp [h', T1] at hr
     · repeat rw [sum_insert] at hr
-      simp at hr; have : x (k - 2) < x k := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton, Nat.add_left_cancel_iff] at hr
+      have : x (k - 2) < x k := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     · repeat rw [sum_insert] at hr
-      simp at hr; have : x (k - 1) < x k := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton] at hr
+      have : x (k - 1) < x k := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     · exact h'
     repeat rw [sum_insert] at hr
-    simp at hr; have : x 0 < x k := by
-      simp [x]; omega
+    simp only [Fin.isValue, sum_singleton] at hr
+    have : x 0 < x k := by
+      simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
     omega; all_goals simp [x]; omega
   rw [rmem] at hr; dsimp [T1] at hr
   repeat rw [sum_insert] at hr
 -- Prove that $x_k=x 0 + x_(k-2) + x_(k - 1)$
-  simp at hr; replace hr : x 0 + x (k - 2) + x (k - 1) = x k := by omega
+  simp only [Fin.isValue, id_eq, sum_singleton] at hr
+  replace hr : x 0 + x (k - 2) + x (k - 1) = x k := by omega
   any_goals simp [x]; omega
   clear r rmem this
 -- Specialize `h3` at $T2$ and prove the first statement in `h3` is false
@@ -188,7 +216,8 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
       · apply Nat.le_of_dvd
         · apply h2; apply orderEmbOfFin_mem
         apply hr; simp [T2]
-      simp [T2] at rmem; rcases rmem with h'|h'|h'|h'
+      simp only [Fin.isValue, mem_insert, mem_singleton, T2] at rmem
+      rcases rmem with h'|h'|h'|h'
       any_goals rw [h']
       all_goals simp [x]
     rw [rmem] at hr; specialize hr (x k) (by simp [T2])
@@ -198,26 +227,31 @@ theorem problem99 (S : Finset ℕ) (h1 : #S = 100) (h2 : ∀ s ∈ S, 0 < s)
     simp [sum_eq_sum_diff_singleton_add rmem]
   rw [← @Nat.add_left_inj _ _ r, ← this] at hr'
   replace rmem : r = x k := by
-    simp [T2] at rmem; rcases rmem with h'|h'|h'|h'
-    any_goals simp [h', T2] at hr'
+    simp only [Fin.isValue, mem_insert, mem_singleton, T2] at rmem
+    rcases rmem with h'|h'|h'|h'
+    any_goals simp only [Fin.isValue, id_eq, h', T2] at hr'
     · repeat rw [sum_insert] at hr'
-      simp at hr'; have : x (k - 3) < x k := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton, Nat.add_left_cancel_iff] at hr'
+      have : x (k - 3) < x k := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     · repeat rw [sum_insert] at hr'
-      simp at hr'; have : x (k - 1) < x k := by
-        simp [x]; omega
+      simp only [Fin.isValue, sum_singleton] at hr'
+      have : x (k - 1) < x k := by
+        simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
       omega; all_goals simp [x]; omega
     · exact h'
     repeat rw [sum_insert] at hr'
-    simp at hr'; have : x 0 < x k := by
-      simp [x]; omega
+    simp only [Fin.isValue, sum_singleton] at hr'
+    have : x 0 < x k := by
+      simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
     omega; all_goals simp [x]; omega
   rw [rmem] at hr'; dsimp [T2] at hr'
   repeat rw [sum_insert] at hr'
 -- Prove that $x_k=x 0 + x_(k - 3) + x_(k - 1)$, but $x_(k-3)< x_(k-2)$, this is impossible
-  simp at hr'; replace hr' : x 0 + x (k - 3) + x (k - 1) = x k := by omega
+  simp only [Fin.isValue, id_eq, sum_singleton] at hr'
+  replace hr' : x 0 + x (k - 3) + x (k - 1) = x k := by omega
   any_goals simp [x]; omega
   clear r rmem this; have : x (k - 3) < x (k - 2) := by
-    simp [x]; omega
+    simp only [Fin.isValue, OrderEmbedding.lt_iff_lt, x]; omega
   omega

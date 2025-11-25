@@ -37,8 +37,8 @@ theorem problem36 (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (M : ℝ)
       intro i; calc
         _ = ∑ x ∈ S, A i.1.1 i.1.2 := by
           apply Finset.sum_congr rfl
-          simp only [Fintype.mem_piFinset, mem_insert, mem_singleton, S]; intro x hx
-          specialize hx i.1.2
+          simp only [Fintype.mem_piFinset, mem_insert, mem_singleton, S]
+          intro x hx; specialize hx i.1.2
           rw [or_comm, ← sq_eq_sq_iff_eq_or_eq_neg, one_pow] at hx
           rw [i.2, mul_assoc, ← pow_two, hx, mul_one]
         _ = _ := by simp [cS, i.2]
@@ -113,20 +113,9 @@ theorem problem36 (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (M : ℝ)
           contradiction
         constructor; omega
         linarith only [yj]
-      rintro ⟨hx, xi, xj⟩; use fun t => if t = i then x i else -x t
-      simp only [↓reduceIte]; split_ands
-      · intro k; split_ifs with h
-        · apply hx
-        simp only [neg_inj]; rw [or_comm, neg_eq_iff_eq_neg]
-        apply hx
-      · exact xi
-      · rw [ite_cond_eq_false]
-        rcases hx j with h|h
-        · simp [h]
-        contradiction; simp only [eq_iff_iff, iff_false]; omega
-      ext k; split_ifs with h
-      · simp [h]
-      simp
+      rintro ⟨hx, xi, xj⟩
+      use fun t => if t = i then x i else -x t
+      grind
   -- This time the summand differs from each other by a minus sign, therefore the summation cancels to $0$
     rw [← this, sum_image]; simp
     · intro x; simp only [coe_filter, Fintype.mem_piFinset, mem_insert, mem_singleton,
@@ -137,9 +126,9 @@ theorem problem36 (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (M : ℝ)
         rw [h, hij]
       specialize hij k
       repeat rw [ite_cond_eq_false] at hij
-      simp only [neg_inj] at hij; exact hij
-      all_goals simp; exact h
-    simp [S]
+      simpa using hij
+      all_goals simpa
+    · simp [S]
 -- Use `key` to rewrite the LHS of the goal, then apply `hbd` and `abs_sum_le_sum_abs` to finish the goal
   rw [← mul_le_mul_iff_right₀ (show 0 < |(2:ℝ)^n| by positivity)]
   rw [← abs_mul, ← key, ← sum_product', sum_product_right]
@@ -159,5 +148,5 @@ theorem problem36 (n : ℕ) (A : Matrix (Fin n) (Fin n) ℝ) (M : ℝ)
           simp only [Fintype.mem_piFinset, mem_insert, mem_singleton, S] at hi
           specialize hi k; rw [or_comm, ← abs_eq] at hi
           rw [hi, mul_one]; simp_rw [mul_comm]
-          simp
+          · simp
         _ ≤ _ := hbd i hi

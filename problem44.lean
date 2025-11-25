@@ -36,7 +36,7 @@ theorem problem44 (f : ℝ → ℝ) : (∀ a b : ℝ, Irrational a → Irrationa
         linarith; rw [← hr]; positivity
       specialize h √(-x) (-√(-x)) this this.neg
       ring_nf at h; rw [sq_sqrt] at h
-      rw [neg_neg] at h; exact h
+      rwa [neg_neg] at h
       linarith
   -- Exclude the trivial case when $x=0$
     intro x; by_cases xne0 : x = 0
@@ -47,8 +47,8 @@ theorem problem44 (f : ℝ → ℝ) : (∀ a b : ℝ, Irrational a → Irrationa
     · rcases this x xne0 with ⟨a, ha1, ha2, ha3, hneg⟩
       have ane : a ≠ 0 := by
         intro h; simp [h] at ha1
-      rw [show x = a * (x / a) by rw [mul_div_cancel₀]; exact ane]
-      rw [h, fneg]; all_goals assumption
+      rw [show x = a * (x / a) by rwa [mul_div_cancel₀], h, fneg]
+      all_goals assumption
   -- Prove that for any $x$, we can find an irrational number $a$ such that $x/a$ is irrational, $a+x/a$ is negative and irrational
     clear x xne0; intro x xne0
     by_cases h' : Irrational (x / √2)

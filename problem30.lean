@@ -42,7 +42,7 @@ theorem problem30 (a b c : ℕ) (r m : ℚ) (Ar : Set ℚ) (apos : 0 < a) (cpos 
     simp only [Nat.cast_natAbs, Int.cast_abs, Int.cast_eq]
     repeat rw [abs_eq_self.mpr]
     any_goals omega
-    simp only [Int.natAbs_cast]; exact copr.left
+    simpa using copr.left
     rw [mul_assoc, Int.gcd_sub_mul_left_left]
     exact r.reduced
 -- Prove the key proposition that $Ar$ is the set of all integral multiples of a certain rational number
@@ -77,17 +77,17 @@ theorem problem30 (a b c : ℕ) (r m : ℚ) (Ar : Set ℚ) (apos : 0 < a) (cpos 
     · use 1; simp
     · rw [lt_iff_le_and_ne]; constructor
       · positivity
-      symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero,
+      symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero_iff,
         Nat.gcd_eq_zero_iff, Int.natAbs_eq_zero, Rat.num_eq_zero, Rat.den_ne_zero, or_false, not_or,
         not_and]
       omega
     intro k hk; replace hk : 0 < k := by
       rw [mul_assoc, ← mul_div] at hk
       rw [mul_pos_iff_of_pos_right] at hk
-      simp only [Int.cast_pos] at hk; exact hk
+      simpa using hk
       rw [lt_iff_le_and_ne]; constructor
       · positivity
-      symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero,
+      symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero_iff,
         Nat.gcd_eq_zero_iff, Int.natAbs_eq_zero, Rat.num_eq_zero, Rat.den_ne_zero, or_false, not_or,
         not_and]
       omega
@@ -95,7 +95,7 @@ theorem problem30 (a b c : ℕ) (r m : ℚ) (Ar : Set ℚ) (apos : 0 < a) (cpos 
     rw [le_mul_iff_one_le_left]; norm_cast
     rw [lt_iff_le_and_ne]; constructor
     · positivity
-    symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero, Nat.gcd_eq_zero_iff,
+    symm; simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, Rat.natCast_eq_zero_iff, Nat.gcd_eq_zero_iff,
       Int.natAbs_eq_zero, Rat.num_eq_zero, Rat.den_ne_zero, or_false, not_or, not_and]
     omega
   rw [ge_iff_le, ← Rat.num_div_den r, meq]

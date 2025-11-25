@@ -27,7 +27,7 @@ theorem problem42 : ∑' k, ⌊(1 + √(2000000 / 4 ^ k)) / 2⌋ = 1414 := by
     rw [le_div_iff₀,show (1:ℝ)*2 = 1+1 by ring]
     rw [add_le_add_iff_left, le_div_iff₀, one_mul]
     rw [sqrt_le_sqrt_iff]; norm_cast
-    rw [Nat.pow_le_iff_le_log]
+    rw [← Nat.le_log_iff_pow_le]
     suffices : Nat.log 4 2000000 = 10; omega
     rw [Nat.log_eq_iff]; all_goals simp
   have hfin : (fun k => ⌊(1 + √(2000000 / 4 ^ k)) / 2⌋).support.Finite := by
@@ -160,7 +160,7 @@ theorem problem42 : ∑' k, ⌊(1 + √(2000000 / 4 ^ k)) / 2⌋ = 1414 := by
       · rw [show 2 * (u / 2 + 1) - 1 = u by omega]
         rw [show 4 = 2^2 by rfl, Nat.pow_right_comm]
         rw [← mul_pow, ← Nat.le_sqrt', auxeq]
-        rw [← xmul, ← hu]; exact xle
+        rwa [← xmul, ← hu]
       rw [show 2 * (u / 2 + 1) - 1 = u by omega]
       rw [← xmul, ← hu]; omega
   -- Use `himg` to rewrite the goal, it suffices to show that the solution set is equal to $Icc 1 (⌊(1 + √(2000000 / 4 ^ k)) / 2⌋₊$

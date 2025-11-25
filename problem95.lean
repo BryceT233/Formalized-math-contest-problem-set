@@ -79,8 +79,7 @@ theorem problem95 {n : ℕ} (hn : n = 2012) : ⌊(√2 + √3) ^ n⌋₊ % 10 = 
     replace this : ∑ x ∈ range (m + 1)with Even (x + m), 2 * 5 ^ x * 2 ^ (m - x) * 6 ^ ((m - x) / 2) * m.choose x =
     2 * 2 ^ m * 6 ^ (m / 2) + ∑ x ∈ filter (fun x => Even (x + m)) (range (m + 1)) \ {0},
     2 * 5 ^ x * 2 ^ (m - x) * 6 ^ ((m - x) / 2) * Nat.choose m x := by
-    -- Should be using `rw [sum_eq_add_sum_diff_singleton this]` here, but memory will explode for unknown reason
-      sorry
+      simp [sum_eq_add_sum_diff_singleton this]
     rw [keym, this, Nat.sub_add_comm]
     replace this : 10 ∣ ∑ x ∈ filter (fun x => Even (x + m)) (range (m + 1)) \ {0},
     2 * 5 ^ x * 2 ^ (m - x) * 6 ^ ((m - x) / 2) * Nat.choose m x := by

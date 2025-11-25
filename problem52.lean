@@ -35,8 +35,8 @@ theorem problem52 (x y : ℕ) (xypos : 0 < x ∧ 0 < y) :
     have dpos : d ≠ 0 := by grind
     have Xpos : 0 < X := by grind
     replace xley : X ≤ Y := by
-      rw [hX, hY, mul_le_mul_iff_left₀] at xley
-      exact xley; omega
+      rwa [hX, hY, mul_le_mul_iff_left₀] at xley
+      omega
     rw [hX, hY] at heq; push_cast at heq
     replace this : ((X : ℤ) * d) ^ 2 + (Y * d) ^ 2 - X * d * (Y * d) =
     (X ^ 2 + Y ^ 2 - X * Y) * d ^ 2 := by ring
@@ -53,11 +53,11 @@ theorem problem52 (x y : ℕ) (xypos : 0 < x ∧ 0 < y) :
       rw [Nat.coprime_sub_self_right, Nat.coprime_mul_iff_left]
       constructor
       · rw [pow_two, Nat.coprime_mul_right_add_right]
-        rw [Nat.coprime_pow_right_iff]; exact copr
+        rwa [Nat.coprime_pow_right_iff]
         simp
       rw [pow_two Y, add_comm, Nat.coprime_mul_right_add_right]
-      rw [Nat.coprime_pow_right_iff, Nat.coprime_comm]
-      exact copr; simp; apply lm1
+      rwa [Nat.coprime_pow_right_iff, Nat.coprime_comm]
+      simp; apply lm1
     rw [Nat.coprime_comm] at copr'
     rw [copr'.dvd_mul_right, Nat.dvd_prime] at dvd1
   -- Since $43$ is a prime number, $X ^ 2 + Y ^ 2 - X * Y$ can only be $1$ or $43$

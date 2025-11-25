@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset Classical Fin.NatCast
@@ -50,8 +56,8 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
     -- Take $a = f(b)$ for some $p-1$-tuples $b$ and $p$-tuples $a$, we show that the sum of $a$ is divisible by $p$
     · rintro ⟨b, hb⟩; simp only [funext_iff, f] at hb
       rw [sum_fin_eq_sum_range]; nth_rw 2 [show p = p-1+1 by omega]
-      rw [sum_range_succ, dite_cond_eq_true]
-      rw [← hb, dite_cond_eq_false, Nat.dvd_iff_mod_eq_zero]
+      rw [sum_range_succ, dite_cond_eq_true, ← hb, dite_cond_eq_false,
+        Nat.dvd_iff_mod_eq_zero]
       have : ∀ x ∈ range (p - 1), (if h : x < p then (a ⟨x, h⟩).val else 0) =
       if h' : x < p - 1 then (b ⟨x, h'⟩).val else 0 := by
         intro x hx; rw [mem_range] at hx
@@ -94,10 +100,12 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
       apply ne_of_lt; calc
         _ < p * 2 := by omega
         _ ≤ _ := by gcongr
-    simp only [kpos, mul_one] at hk; any_goals omega
+    simp only [kpos, mul_one] at hk
+    any_goals omega
     · apply Nat.sub_lt; omega
-      simp only [Fin.val_pos_iff]; rw [Fin.pos_iff_ne_zero']; exact h
-    all_goals simp
+      simp only [Fin.val_pos_iff]
+      rwa [Fin.pos_iff_ne_zero']
+    · intro; simp
 -- Denote the equivalence from $Fin p$ to $ZMod p$ by $σ$
   let σ := ZMod.finEquiv p
 -- Prove an auxillary lemma for later use
@@ -126,10 +134,9 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
   have stbl_triv : ∀ a : S, AddAction.stabilizer (Fin p) a = ⊥ := by
     rintro ⟨a, amem⟩; rw [AddSubgroup.eq_bot_iff_forall]
     intro k kmem; simp [HVAdd.hVAdd] at kmem
-    unfold VAdd.vadd at kmem; unfold AddAction.toVAdd at kmem
-    simp only [Subtype.mk.injEq, add_eq_right, funext_iff, Pi.natCast_apply, Fin.cast_val_eq_self,
-      Pi.zero_apply, forall_const, Fp_AA_S, Fp_VAdd_S] at kmem
-    exact kmem
+    unfold VAdd.vadd at kmem
+    unfold AddAction.toVAdd at kmem
+    simpa [funext_iff, Fp_AA_S, Fp_VAdd_S] using kmem
 -- Apply `AddAction.selfEquivOrbitsQuotientProd` to `stbl_triv` to get an equivalence from $S$ to the product of the orbit quotient and $Fin p$
   apply AddAction.selfEquivOrbitsQuotientProd at stbl_triv
 -- For simplicity, denote the orbit quotient by $Q$
@@ -182,10 +189,10 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
         rw [Fin.val_inj]; apply hk
       simp only [mem_filter, mem_univ, true_and, S] at bmem
       rw [Nat.dvd_iff_mod_eq_zero, sum_finval] at bmem
-      simp only [Fin.val_eq_zero_iff] at bmem; exfalso; revert bmem
-      simp only [← σ.toEquiv.apply_eq_iff_eq, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe, map_sum,
-        map_zero, imp_false, Decidable.not_not]
-      exact h; simp
+      simp only [Fin.val_eq_zero_iff] at bmem
+      exfalso; revert bmem
+      simpa [← σ.toEquiv.apply_eq_iff_eq]
+      · intro; simp
   -- To prove that $F$ is surjective, we take $B$ to be any quotient class and $b$ be an $p$-tuple representing $B$
     intro B; set b := (Quotient.out B).val
     have bmem : b ∈ S := (Quotient.out B).2
@@ -202,7 +209,7 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
     have aux : ∑ i, b i ≠ 0 ∧ (2 : ZMod p) ≠ 0 := by
       constructor
       · simp only [Nat.dvd_iff_mod_eq_zero, sum_finval, Fin.val_eq_zero_iff, mem_filter, mem_univ,
-        true_and, S] at bmem
+          true_and, S] at bmem
         exact bmem
       intro h; rw [show (2:ZMod p) = (2:ℕ) by rfl] at h
       rw [ZMod.natCast_eq_zero_iff, Nat.prime_dvd_prime_iff_eq] at h
@@ -217,16 +224,18 @@ theorem problem2 (p : ℕ) [ppr : Fact p.Prime] (ppar : p % 2 = 1)
       zero_add, Fin.val_eq_zero_iff]
     rw [← add_assoc, ← sum_mul, ← mul_sum]
     nth_rw 2 [← sum_image]; simp
-    rw [mul_comm, add_eq_zero_iff_eq_neg, ← two_nsmul]
-    rw [← σ.toEquiv.apply_eq_iff_eq]; simp [-map_sum, hu]
-    rw [mul_assoc, mul_assoc, inv_mul_cancel₀, mul_one]
-    rw [mul_comm, mul_assoc, mul_right_eq_self₀]; left
-    rw [← one_add_one_eq_two, map_add, map_one]
-    rw [one_add_one_eq_two, inv_mul_cancel₀]
+    rw [mul_comm, add_eq_zero_iff_eq_neg, ← two_nsmul, ← σ.toEquiv.apply_eq_iff_eq]
+    simp only [RingEquiv.toEquiv_eq_coe, hu, map_mul, mul_inv_rev, neg_mul, smul_neg,
+      EquivLike.coe_coe, map_neg, map_nsmul, RingEquiv.apply_symm_apply, nsmul_eq_mul,
+      Nat.cast_ofNat, neg_inj]
+    rw [mul_assoc, mul_assoc, inv_mul_cancel₀, mul_one, mul_comm, mul_assoc,
+      mul_right_eq_self₀]
+    left; rw [← one_add_one_eq_two, map_add, map_one, one_add_one_eq_two,
+      inv_mul_cancel₀]
     · exact aux.right
     · rw [ne_eq, σ.map_eq_zero_iff]
       exact aux.left
-    simp
+    · intro; simp
 -- Use the bijectivity of $F$ and the cardinality of $Q$ to finish the goal
   rw [← c_T, Fintype.card_of_bijective Fbij, stbl_triv]
   omega

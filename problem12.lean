@@ -8,7 +8,8 @@ import Mathlib
 
 open Finset
 
-/- Let R be the reals. Let S ⊆ R have n ≥ 2 elements. Let A S = { x ∈ R : x = (s + t)/2 for some s, t ∈ S with s ≠ t}. What is the smallest possible |A S |? -/
+/- Let R be the reals. Let S ⊆ R have n ≥ 2 elements. Let A S = { x ∈ R : x = (s + t)/2 for some s,
+t ∈ S with s ≠ t}. What is the smallest possible |A S |? -/
 theorem problem12 (n : ℕ) (nge : 2 ≤ n): IsLeast {t | ∃ S : Finset ℝ, #S = n ∧
     t = {x | ∃ s ∈ S, ∃ t ∈ S, s ≠ t ∧ x = (s + t) / 2}.ncard} (2 * n - 3) := by
 -- Split the goal to an existential subgoal and a lower bound subgoal
@@ -20,14 +21,14 @@ theorem problem12 (n : ℕ) (nge : 2 ≤ n): IsLeast {t | ∃ S : Finset ℝ, #S
     use S; constructor
     -- Prove that $S$ has $n$ elements
     · rw [card_image_of_injective]; simp
-      intro i j hij; simp at hij; exact hij
+      intro _ _ h; simpa using h
   -- Prove that the set of midpoints of elements in $S$ has $2 * n - 3$ elements
     suffices : {x | ∃ s ∈ S, ∃ t ∈ S, ¬s = t ∧ x = (s + t) / 2} =
     image (fun (i : ℕ) => (i : ℝ) / 2) (Icc 1 (2 * n - 3))
     · rw [this, Set.ncard_coe_finset, card_image_of_injective]
-      simp; intro i j hij; simp at hij
-      rw [div_left_inj'] at hij
-      norm_cast at hij; simp
+      simp
+      · intro _ _ h
+        simpa using h
     ext x; simp only [mem_image, mem_range, exists_exists_and_eq_and, Nat.cast_inj,
       Set.mem_setOf_eq, coe_image, coe_Icc, Set.mem_image, Set.mem_Icc, S]
     constructor
@@ -75,7 +76,7 @@ theorem problem12 (n : ℕ) (nge : 2 ≤ n): IsLeast {t | ∃ S : Finset ℝ, #S
       EmbeddingLike.apply_eq_iff_eq, Fin.castLE_inj] at hij
     exact hij
 -- Prove that $A$ and $A'$ are subsets of $MS$
-  have sbst : A.toSet ⊆ MS ∧ A'.toSet ⊆ MS := by
+  have sbst : SetLike.coe A ⊆ MS ∧ SetLike.coe A' ⊆ MS := by
     simp only [coe_image, coe_univ, Set.image_univ, Set.subset_def, Set.mem_range, Set.mem_setOf_eq,
       forall_exists_index, forall_apply_eq_imp_iff, A, MS, A']
     constructor
@@ -94,9 +95,11 @@ theorem problem12 (n : ℕ) (nge : 2 ≤ n): IsLeast {t | ∃ S : Finset ℝ, #S
 -- Prove that $A ∩ A' = {(s_0 + s_(n - 1)) / 2}$
   have cap : A ∩ A' = {(s ⟨0, by omega⟩ + s ⟨n - 1, by omega⟩) / 2} := by
     rw [eq_singleton_iff_unique_mem, mem_inter]; split_ands
-    · simp only [mem_image, mem_univ, true_and, A]; use ⟨n - 2, by omega⟩; congr
+    · simp only [mem_image, mem_univ, true_and, A]
+      use ⟨n - 2, by omega⟩; congr
       simp only [Fin.succ_mk, Fin.cast_mk, ← Fin.val_inj]; omega
-    · simp only [mem_image, mem_univ, true_and, A']; use ⟨0, by omega⟩; congr
+    · simp only [mem_image, mem_univ, true_and, A']
+      use ⟨0, by omega⟩; congr
     intro x hx; simp only [mem_inter, mem_image, mem_univ, true_and, A, A'] at hx
     rcases hx with ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
     rw [← hb, div_left_inj'] at ha
@@ -107,7 +110,7 @@ theorem problem12 (n : ℕ) (nge : 2 ≤ n): IsLeast {t | ∃ S : Finset ℝ, #S
       omega
     linarith; positivity
 -- Prove the cardinality of $A ∪ A'$ is $2 * n - 3$
-  have : 2 * n - 3 = (A.toSet ∪ A'.toSet).ncard := by
+  have : 2 * n - 3 = (SetLike.coe A ∪ SetLike.coe A').ncard := by
     rw [← coe_union, Set.ncard_coe_finset]
     rw [card_union, A_c, A'_c, cap, card_singleton]
     omega

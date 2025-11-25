@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset
@@ -20,7 +26,7 @@ lemma aux_pow : ∀ m > 0, (∀ k, ¬ m = 2 ^ k) → ∃ p, p % 2 = 1 ∧ p.Prim
     apply dvd_trans pdvd; apply Nat.div_dvd_of_dvd
     apply Nat.ordProj_dvd
 
--- Prove a lemma that $(n ^ k + 1) / (n + 1)$ is odd when $k$ is odd
+-- Prove a lemma that $(n ^ k + 1) / (n + 1)$ is always odd when $k$ is odd
 lemma lm_par : ∀ n k, Odd k → Odd ((n ^ k + 1) / (n + 1)) := by
   intro n k kpar; rw [Nat.odd_iff] at kpar
 -- Rewrite the expression in question to a geometric sum
@@ -45,11 +51,9 @@ lemma lm_par : ∀ n k, Odd k → Odd ((n ^ k + 1) / (n + 1)) := by
     rw [neg_pow, Int.mul_emod]
     have : (-1) ^ i % 2 = 1 := by
       by_cases ipar : Odd i
-      · rw [Odd.neg_one_pow]; simp
-        exact ipar
+      · simp [Odd.neg_one_pow ipar]
       rw [Nat.not_odd_iff_even] at ipar
-      rw [Even.neg_one_pow]; simp
-      exact ipar
+      simp [Even.neg_one_pow ipar]
     rw [this]; norm_cast
     rw [Nat.pow_mod, show n % 2 = 1 by omega]
     simp
@@ -57,8 +61,8 @@ lemma lm_par : ∀ n k, Odd k → Odd ((n ^ k + 1) / (n + 1)) := by
   norm_cast; positivity
   · norm_cast; nth_rw 2 [show 1 = 1^k by simp]
     apply Odd.nat_add_dvd_pow_add_pow
-    rw [Nat.odd_iff]; exact kpar
-  rw [Nat.odd_iff]; exact kpar
+    rwa [Nat.odd_iff]
+  rwa [Nat.odd_iff]
 
 -- Prove that any square modulo $4$ is $0$ or $1$
 lemma sq_mod4 : ∀ n, n ^ 2 % 4 = 0 ∨ n ^ 2 % 4 = 1 := by
@@ -157,7 +161,7 @@ theorem problem19 (n : ℕ) (npos : 0 < n) : (∃ a > 2, ∀ d ≠ n, d ∣ n �
     by_contra!; replace this : a % 2 = 1 := by omega
     rw [add_zero, Nat.pow_mod, this] at hk
     simp only [one_pow, Nat.mod_succ, Nat.zero_mod, one_ne_zero] at hk
-    intro h; simp only [h, not_lt_zero'] at kge
+    intro h; simp [h] at kge
     exact dpos
   symm at hk; rw [← Nat.sub_eq_iff_eq_add] at hk
   rw [show k = k - n / p + n / p by omega, pow_add] at hk
@@ -193,7 +197,7 @@ theorem problem19 (n : ℕ) (npos : 0 < n) : (∃ a > 2, ∀ d ≠ n, d ∣ n �
     rw [imp_false, Nat.not_odd_iff_even, hl]
     use 2 ^ (l - 1); rw [← mul_two, ← pow_succ]
     rw [show l-1+1 = l by omega]
--- Deduct $n = p$, which is a contradiction because $n$ is not a prime
+-- Deduct $n = p$, contradicts to the fact that $n$ is not a prime
   simp only [lle, pow_zero] at hl; replace hl := Nat.eq_of_dvd_of_div_eq_one auxdvd hl
   simp only [Nat.add_right_cancel_iff] at hl
   nth_rw 1 [show a / 2 = (a / 2) ^ 1 by simp] at hl

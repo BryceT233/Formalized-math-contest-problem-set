@@ -73,7 +73,7 @@ theorem problem91 (T : ℕ → ℕ) (hT : ∀ L, T L = ∑ n ∈ range L, (n + 1
         mem_singleton, OfNat.zero_ne_ofNat, or_self, not_false_eq_true, sum_insert, zero_add,
         one_pow, Nat.reduceDiv, OfNat.one_ne_ofNat, Nat.reduceAdd, Nat.reducePow,
         sum_singleton] at h
-      rw [← hT] at h; exact h
+      rwa [← hT] at h
     have TL := hT L; nth_rw 2 [← Nat.div_add_mod L 3] at TL
     rw [sum_range_add, ← Nat.mul_left_cancel_iff (show 0<9 by simp)] at TL
     rw [Nat.mul_add, ← hT, hT3] at TL

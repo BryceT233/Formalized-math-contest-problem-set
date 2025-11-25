@@ -18,7 +18,7 @@ theorem problem31 (x m n : ℕ) : ∑ i ∈ Icc 1 n, min (x / i) m =
 -- Denote the set of $(a, b)$ such that $a ∈ [1, m]$, $b ∈ [1, n]$ and $a * b ≤ x$ by $S$
   let S := {p ∈ Icc 1 m ×ˢ Icc 1 n | p.1 * p.2 ≤ x}
 -- Prove that the projection onto first coordinates maps $S$ to $[1, m]$
-  have p1 : Set.MapsTo Prod.fst S.toSet (Icc 1 m).toSet := by
+  have p1 : Set.MapsTo Prod.fst (SetLike.coe S) (SetLike.coe (Icc 1 m)) := by
     simp only [Set.MapsTo, coe_filter, mem_product, mem_Icc, Set.mem_setOf_eq, coe_Icc, Set.mem_Icc,
       and_imp, Prod.forall, S]
     omega
@@ -33,21 +33,20 @@ theorem problem31 (x m n : ℕ) : ∑ i ∈ Icc 1 n, min (x / i) m =
         simp only [coe_Icc, ← beqs, and_true] at *; clear beqs s
         split_ands; any_goals assumption
         rw [Nat.le_div_iff_mul_le] at tle1
-        rw [mul_comm]; exact tle1
+        rwa [mul_comm]
         omega
       rintro ⟨sge, sle, tge, tle, hmul, seqb⟩
       simp only [coe_Icc, seqb, and_true] at *; clear seqb s
       split_ands; any_goals assumption
-      rw [Nat.le_div_iff_mul_le, mul_comm]
-      exact hmul; omega
+      rwa [Nat.le_div_iff_mul_le, mul_comm]
+      omega
     rw [← this, card_image_of_injective]; simp
-    intro i j hij; simp only [Prod.mk.injEq, true_and] at hij
-    exact hij
+    intro _ _ h; simpa using h
 -- Prove that the cardinality of $S$ is RHS of the identity in the goal
   have c1 := card_eq_sum_card_fiberwise p1
   rw [sum_congr rfl f1] at c1; rw [← c1]
 -- Prove that the projection onto second coordinates maps $S$ to $[1, m]$
-  replace p1 : Set.MapsTo Prod.snd S.toSet (Icc 1 n).toSet := by
+  replace p1 : Set.MapsTo Prod.snd (SetLike.coe S) (SetLike.coe (Icc 1 n)) := by
     simp only [Set.MapsTo, coe_filter, mem_product, mem_Icc, Set.mem_setOf_eq, coe_Icc, Set.mem_Icc,
       and_imp, Prod.forall, S]
     omega
@@ -61,17 +60,16 @@ theorem problem31 (x m n : ℕ) : ∑ i ∈ Icc 1 n, min (x / i) m =
       · rintro ⟨sle1, bge, beqt⟩
         simp only [mem_Icc, and_imp, coe_Icc, ← beqt, and_true] at *; clear beqt t
         split_ands; any_goals assumption
-        rw [Nat.le_div_iff_mul_le] at sle1
-        exact sle1; omega
+        rwa [Nat.le_div_iff_mul_le] at sle1
+        omega
       rintro ⟨sle, tge, tle, hmul, teqb⟩
       simp only [mem_Icc, and_imp, coe_Icc, teqb, and_true] at *; clear teqb t
       constructor
-      · rw [Nat.le_div_iff_mul_le]
-        exact hmul; omega
+      · rwa [Nat.le_div_iff_mul_le]
+        omega
       exact sle
     rw [← this, card_image_of_injective]; simp
-    intro i j hij; simp only [Prod.mk.injEq, and_true] at hij
-    exact hij
+    intro _ _ h; simpa using h
 -- Apply `card_eq_sum_card_fiberwise` again to finish the goal
   replace c1 := card_eq_sum_card_fiberwise p1
   rw [sum_congr rfl f1] at c1; omega

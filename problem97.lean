@@ -13,7 +13,7 @@ theorem problem97 {n} (npos : 0 < n) (a : Fin n → ℕ) (ainj : a.Injective)
     (h0 : ∑ i : Fin n, 2 ^ a i = 1997) : ∑ i : Fin n, a i = 45 := by
 -- Assume w. l. o. g. that $a$ is strictly increasing
   wlog amono : StrictMono a
-  -- Use `orderEmbOfFin` to get an ordering on the image of $a$
+  -- Use `orderEmbOfFin` to get an ordering on the sequence $a$
   · let s := image a univ
     have cs : #s = n := by
       dsimp [s]; simp [card_image_of_injective _ ainj]

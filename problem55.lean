@@ -46,7 +46,7 @@ theorem problem55 (x y : ℕ → ℝ) (n : ℕ) (ngt : 1 < n)
       apply sum_lt_sum
       · simp only [mem_Icc, and_imp]; intro i ige ile
         apply mul_le_mul_of_nonneg_left
-        rw [ymono.le_iff_le]; exact ige
+        rwa [ymono.le_iff_le]
         any_goals simp; omega
         let xige := ige; rw [← xmono.le_iff_le] at xige
         replace xige : 0 ≤ x i := by grind
@@ -58,7 +58,7 @@ theorem problem55 (x y : ℕ → ℝ) (n : ℕ) (ngt : 1 < n)
         all_goals simp; omega
       simp only [mem_Icc]; use 2; constructor; omega
       specialize xbd 2 (by simp) (by omega)
-      rw [mul_lt_mul_left]; apply ymono
+      rw [mul_lt_mul_iff_right₀]; apply ymono
       any_goals simp; omega
       simp; rw [aux]; apply lt_of_le_of_lt h
       apply xmono; any_goals simp; omega
@@ -137,14 +137,14 @@ theorem problem55 (x y : ℕ → ℝ) (n : ℕ) (ngt : 1 < n)
       · simp only [mem_Icc, and_imp]; intro i ige ile
         specialize xbd i ige ile
         have xile: x i ≤ x n := by
-          rw [xmono.le_iff_le]; exact ile
+          rwa [xmono.le_iff_le]
           all_goals simp; omega
         apply mul_nonneg_of_nonpos_of_nonpos
         · by_contra!; rw [aux] at this
           linarith only [lmem.right, xile, this]
           exact xbd.left; exact xbd.right
-        rw [sub_nonpos, ymono.le_iff_le]
-        exact ile; all_goals simp; omega
+        rwa [sub_nonpos, ymono.le_iff_le]
+        all_goals simp; omega
     -- Prove that the first term is positive
       use 1; simp only [mem_Icc, le_refl, true_and]
       specialize xbd 1 (by simp) (by omega)

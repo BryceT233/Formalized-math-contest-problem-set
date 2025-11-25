@@ -80,7 +80,7 @@ lemma lm : ∀ p q n : ℕ, p ≠ 2 → p.Prime → q.Prime → p ∣ 1 + n ^ q 
   apply_fun fun t => t.val at EFT; push_cast at EFT
   rw [ZMod.coe_unitOfCoprime] at EFT
   rw [← orderOf_dvd_iff_pow_eq_one] at EFT
-  rw [h] at EFT; exact EFT
+  rwa [h] at EFT
 
 /-Find all prime numbers $p, q, r$ such that $p$ divides $1+q^{r}$, $q$ divides $1+r^{p}$, and $r$ divides $1+p^{q}$.-/
 theorem problem41 (p q r : ℕ) (ppr : p.Prime) (qpr : q.Prime) (rpr : r.Prime) :
@@ -182,8 +182,7 @@ theorem problem41 (p q r : ℕ) (ppr : p.Prime) (qpr : q.Prime) (rpr : r.Prime) 
             simp [this]
           rw [← Nat.odd_iff]; apply rpr.odd_of_ne_two
           exact rne2
-        rw [h', add_comm] at dvd2
-        exact dvd2
+        rwa [h', add_comm] at dvd2
       exfalso; have : ¬ 2 * q ∣ 2 := by
         intro h; apply Nat.le_of_dvd at h
         all_goals omega

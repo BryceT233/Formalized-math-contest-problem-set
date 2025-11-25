@@ -47,8 +47,7 @@ theorem problem35 (p q m : ℕ) (ppr : p.Prime) (qpr : q.Prime)
       apply Nat.Coprime.mul_dvd_of_dvd_of_dvd
       any_goals assumption
       rw [ppr.coprime_iff_not_dvd]
-      rw [Nat.prime_dvd_prime_iff_eq ppr qpr]
-      exact hne
+      rwa [Nat.prime_dvd_prime_iff_eq ppr qpr]
     intro h; simp only [h, CanonicallyOrderedAdd.mul_pos, Nat.zero_mod, and_self, and_true]
     any_goals omega
     apply Nat.le_add_right_of_le

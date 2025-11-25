@@ -1,8 +1,15 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset Classical
 
-/- An ordered pair of sets $(A, B)$ is good if $A$ is not a subset of $B$ and $B$ is not a subset of $A$. How many ordered pairs of subsets of $\{1,2, \ldots, 2017\}$ are good? -/
+/- An ordered pair of sets $(A, B)$ is good if $A$ is not a subset of $B$ and $B$ is not a subset of $A$.
+How many ordered pairs of subsets of $\{1,2, \ldots, 2017\}$ are good? -/
 theorem problem16 (n : ℕ) (hn : n = 2017)
     (good : Finset (Fin n) × Finset (Fin n) → Prop) (hg : ∀ A B, good (A, B)
     ↔ ¬ A ⊆ B ∧ ¬ B ⊆ A) : #(filter (fun (A, B) => good (A, B)) univ) =
@@ -104,7 +111,9 @@ theorem problem16 (n : ℕ) (hn : n = 2017)
     · intro h; simp [h]
     rintro ⟨h1, h2⟩; rw [← coe_subset] at h1 h2
     have := Set.eq_of_subset_of_subset h1 h2
-    simp only [coe_inj] at this; exact this
-  rw [← this, card_image_of_injective]; simp
-  · intro A B h; simp only [Prod.mk.injEq, and_self] at h; exact h
+    simpa using this
+  rw [← this, card_image_of_injective]
+  simp
+  · intro _ _ h
+    simpa using h
   exact Prod.swap_bijective.injective

@@ -120,7 +120,7 @@ theorem problem39 (a : ℕ → ℕ) (ha : ∀ n, a (n + 1) = a n + a n % 10) :
   · obtain ⟨k, hk1, hk2⟩ : ∃ k, a 0 + 2 < 2 ^ k ∧ k % 4 = 2 := by
       by_contra!; let t := Nat.log 2 (a 0 + 2)
       have auxlt : a 0 + 2 < 2 ^ (t + 6 - t % 4) := by
-        rw [Nat.lt_pow_iff_log_lt]
+        rw [← Nat.log_lt_iff_lt_pow]
         have := Nat.mod_lt t (show 4>0 by simp)
         all_goals omega
       specialize this (t + 6 - t % 4) auxlt
@@ -152,7 +152,7 @@ theorem problem39 (a : ℕ → ℕ) (ha : ∀ n, a (n + 1) = a n + a n % 10) :
   obtain ⟨k, kpos, hk1, hk2⟩ : ∃ k > 4, a 0 < 2 ^ k ∧ k % 4 = 1 := by
     by_contra!; let t := Nat.log 2 (a 0)
     have auxlt : a 0 < 2 ^ (t + 5 - t % 4) := by
-      rw [Nat.lt_pow_iff_log_lt]
+      rw [← Nat.log_lt_iff_lt_pow]
       have := Nat.mod_lt t (show 4>0 by simp)
       all_goals omega
     specialize this (t + 5 - t % 4) (by omega) auxlt
@@ -167,7 +167,7 @@ theorem problem39 (a : ℕ → ℕ) (ha : ∀ n, a (n + 1) = a n + a n % 10) :
     intro; rw [← Nat.modEq_iff_dvd']
     rw [Nat.ModEq, ← Nat.div_add_mod k 4, hk2]
     rw [add_comm, ← add_assoc, ← Nat.mul_add]
-    rw [lm']; exact h'; omega
+    rwa [lm']; omega
     apply auxle
   have hf : ∀ l, f l ∈ {n | ∃ m, a n = 2 ^ m} := by
     intro l; simp only [Set.mem_setOf_eq, f]

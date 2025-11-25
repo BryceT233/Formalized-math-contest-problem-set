@@ -136,17 +136,14 @@ theorem problem68 : IsGreatest {t : ℝ | ∃ x1 x2 x3 x4 a b d : ℝ, x1 ∈ Se
     positivity
 -- Put together what we have proved so far to finish the goal
   rw [pnx1, pnx4]; field_simp
-  rw [← div_div_div_eq, show (5/4:ℝ) = 5/2/2 by norm_num]
-  apply div_le_div₀; any_goals positivity
-  · rw [div_le_div_iff₀, ← sub_nonneg]
-    calc
-      _ ≤ (2 * x1 - 1) * (2 - x1) := by
-        apply mul_nonneg
-        linarith only [x1ge]
-        linarith only [x1le]
-      _ = _ := by ring
-    all_goals positivity
-  rw [le_div_iff₀, ← sub_nonneg]; calc
-    _ ≤ (x4 - 1) ^ 2 := by positivity
-    _ = _ := by ring
-  positivity
+  rw [mul_assoc, mul_assoc]
+  nth_rw 3 [mul_comm]; rw [← div_le_div_iff₀]; calc
+    _ ≤ (5 : ℝ) / 2 := by
+      field_simp; rw [← sub_nonpos]; calc
+        _ = (2 * x1 - 1) * (x1 - 2) := by ring
+        _ ≤ _ := mul_nonpos_of_nonneg_of_nonpos (by linarith) (by linarith)
+    _ ≤ _ := by
+      field_simp; rw [← sub_nonneg]; calc
+        _ ≤ 2 * (x4 - 1) ^ 2 := by positivity
+        _ = _ := by ring
+  all_goals positivity

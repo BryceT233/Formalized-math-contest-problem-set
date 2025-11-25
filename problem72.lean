@@ -29,7 +29,7 @@ theorem problem72 : #{P ∈ Icc (1, 1) (2020, 2020) |
     have altb : a < b := by
       have : 3 * x + y < x + 3 * y := by omega
       rw [ha, hb] at this
-      (expose_names; exact (Nat.pow_lt_pow_iff_right this_1).mp this)
+      expose_names; exact (Nat.pow_lt_pow_iff_right this_1).mp this
     rw [← Nat.mul_left_cancel_iff (show 0<3 by simp)] at ha
     rw [show 3*(3*x+y) = 8*x+(x+3*y) by ring] at ha
     rw [hb] at ha; symm at ha
@@ -37,7 +37,7 @@ theorem problem72 : #{P ∈ Icc (1, 1) (2020, 2020) |
   -- Prove a key bound that $p^(b-a)<3$, which leads to $p=2$ and $b=a+1$
     have bd : 0 < 3 * p ^ a - p ^ b := by omega
     rw [Nat.sub_pos_iff_lt, show b = b-a+a by omega] at bd
-    rw [pow_add, mul_lt_mul_right] at bd
+    rw [pow_add, mul_lt_mul_iff_left₀] at bd
     have beq : b - a = 1 := by
       by_contra!; replace this : 2 ≤ b - a := by omega
       exfalso; convert bd; simp only [false_iff, not_lt]
@@ -183,7 +183,7 @@ theorem problem72 : #{P ∈ Icc (1, 1) (2020, 2020) |
       rw [pow_add, pow_mul, Nat.pow_right_comm]; ring
       norm_num [Nat.lt_mul_iff_one_lt_left]
     rintro ⟨age, bge, ale, ble, hpow, agtb⟩
-    have := heq b (by omega) a (by omega) agtb (by ring_nf at *; exact hpow)
+    have := heq b (by omega) a (by omega) agtb (by ring_nf at ⊢ hpow; exact hpow)
     rcases this with ⟨ha, ⟨j, hj⟩⟩; use j; split_ands
     · rw [hj] at ha; rw [ha] at ale
       by_contra!; convert ale; simp only [false_iff, not_le]
@@ -196,17 +196,9 @@ theorem problem72 : #{P ∈ Icc (1, 1) (2020, 2020) |
   rw [← img1, ← img2, ← img3]
   repeat rw [card_image_of_injective]
   · simp
-  · intro i j hij; simp only [Prod.mk.injEq, mul_eq_mul_left_iff, Nat.ofNat_pos, ne_eq,
-      OfNat.ofNat_ne_one, not_false_eq_true, pow_right_inj₀, OfNat.ofNat_ne_zero, or_false, and_self,
-      f3] at hij
-    exact hij
-  · intro i j hij; simp only [Prod.mk.injEq, Nat.ofNat_pos, ne_eq, OfNat.ofNat_ne_one,
-      not_false_eq_true, pow_right_inj₀, and_self, f2] at hij
-    exact hij
-  · intro i j hij; simp only [Prod.mk.injEq, Nat.ofNat_pos, ne_eq, OfNat.ofNat_ne_one,
-      not_false_eq_true, pow_right_inj₀, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false, and_self,
-    f1] at hij
-    exact hij
+  · intro _ _ h; simpa [f3] using h
+  · intro _ _ h; simpa [f2] using h
+  · intro _ _ h; simpa [f1] using h
   · rw [disjoint_filter]; grind
   rw [disjoint_union_left]; constructor
   all_goals rw [disjoint_filter]; grind

@@ -36,7 +36,7 @@ theorem problem69 {f : ℕ → ℕ} (f1 : f 1 = 1)
         rw [zero_pow] at this; simp at this
         intro h; simp only [Nat.log_eq_zero_iff, Nat.not_ofNat_le_one, or_false] at h
         omega
-      rw [Nat.lt_pow_iff_log_lt, Nat.lt_add_one_iff]
+      rw [← Nat.log_lt_iff_lt_pow, Nat.lt_add_one_iff]
       apply Nat.log_monotone; any_goals simp
       any_goals exact h
       right; exact h
@@ -48,7 +48,7 @@ theorem problem69 {f : ℕ → ℕ} (f1 : f 1 = 1)
     have : 2 ^ 6 ≤ 2 ^ x := by gcongr; simp
     have : 2 ^ 6 ≤ 2 ^ y := by gcongr; simp
     replace hxy : 2 ^ x = 2 ^ y := by omega
-    rw [pow_right_inj₀] at hxy; exact hxy
+    rwa [pow_right_inj₀] at hxy
     all_goals simp
 -- Prove that all the solutions are of the form $2^k-19$
   simp only [Finset.ext_iff, mem_filter, mem_range, mem_image, mem_Icc, and_assoc]

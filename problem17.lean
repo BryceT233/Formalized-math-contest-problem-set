@@ -1,24 +1,34 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Complex Finset
 
-/-Let $P$ and $Q$ be integers. Let $(f_n)_{n \ge 0}$ be a sequence of integers defined by $f_0=0$, $f_1=1$, and $f_n = P \cdot f_{n-1} - Q \cdot f_{n-2}$ for all $n \ge 2$. Let $p$ be a prime number. If $p \mid f_p$, show that $p \mid (P^2 - 4Q)$.-/
+/-Let $P$ and $Q$ be integers. Let $(f_n)_{n \ge 0}$ be a sequence of integers defined by $f_0=0$, $f_1=1$,
+and $f_n = P \cdot f_{n-1} - Q \cdot f_{n-2}$ for all $n \ge 2$. Let $p$ be a prime number. If $p \mid f_p$,
+show that $p \mid (P^2 - 4Q)$.-/
 theorem problem17 (P Q : ℤ) (f : ℕ → ℤ) (f0 : f 0 = 0)
     (f1 : f 1 = 1) (frec : ∀ n ≥ 2, f n = P * f (n - 1) - Q * f (n - 2)) :
     ∀ p : ℕ, p.Prime → (p : ℤ) ∣ f p → (p : ℤ) ∣ P ^ 2 - 4 * Q := by
 -- If $P ^ 2 - 4 * Q = 0$, the goal is trivial
-  by_cases dne : P ^ 2 - 4 * Q = 0; simp [dne]
+  by_cases dne : P ^ 2 - 4 * Q = 0
+  · simp [dne]
 -- Rewrite the indexes in the recursion formula of $f$
   replace frec : ∀ n, f (n + 2) = P * f (n + 1) - Q * f n := by
     intro n; specialize frec (n + 2) (by simp)
     rw [show n+2-1 = n+1 by omega] at frec
-    rw [Nat.add_sub_cancel] at frec; exact frec
+    rwa [Nat.add_sub_cancel] at frec
 -- Prove the trivial case when $p = 2$
   intro p ppr pdvd; by_cases hp : p = 2
   · simp only [hp, Nat.cast_ofNat] at *
     simp only [frec, zero_add, f1, mul_one, f0, mul_zero, sub_zero] at pdvd
     apply dvd_sub; apply dvd_pow; exact pdvd
-    simp; use 2 * Q; ring
+    · simp
+    · use 2 * Q; ring
 -- Now $p$ is an odd prime, denote the complex square root of $P ^ 2 - 4 * Q$ by $d$
   replace hp : p % 2 = 1 := by
     rw [← Nat.odd_iff]; exact ppr.odd_of_ne_two hp
@@ -97,15 +107,14 @@ theorem problem17 (P Q : ℤ) (f : ℕ → ℤ) (f0 : f 0 = 0)
   simp only [range_one, sum_singleton, mul_zero, pow_zero, mul_one, tsub_zero,
     Nat.choose_zero_right, Nat.cast_one] at hk
   rw [dvd_add_left] at hk; apply IsCoprime.dvd_of_dvd_mul_left at hk
-  rw [Prime.dvd_pow_iff_dvd] at hk; exact hk
+  rwa [Prime.dvd_pow_iff_dvd] at hk
 -- Finish the rest trivial goals
-  · rw [← Nat.prime_iff_prime_int]; exact ppr
+  · rwa [← Nat.prime_iff_prime_int]
   · omega
-  · simp only [Int.isCoprime_iff_nat_coprime, Int.natAbs_cast, Int.reduceAbs,
-    Nat.coprime_two_right, Nat.odd_iff]
-    exact hp
+  · simpa [Int.isCoprime_iff_nat_coprime, Nat.coprime_two_right, Nat.odd_iff]
   -- Prove that $p$ divides the rest terms in the sum
-  · apply dvd_sum; intro i hi; simp only [mem_range] at hi
+  · apply dvd_sum
+    intro i hi; rw [mem_range] at hi
     apply dvd_mul_of_dvd_right; norm_cast
     apply ppr.dvd_choose; all_goals omega
   · norm_cast; positivity

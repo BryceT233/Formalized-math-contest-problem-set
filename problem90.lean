@@ -16,15 +16,16 @@ lemma lm : ∀ m, ∀ h : m ≠ 0, (Nat.digits 10 m).getLast (Nat.digits_ne_nil_
       by_cases h : m < 10
       · simp only [Nat.digits_of_lt 10 m mne h, getLast_singleton]
         have : Nat.log 10 m = 0 := by
-          rw [Nat.log_eq_iff]; simp only [pow_zero, zero_add, pow_one]
-          exact ⟨by omega, h⟩; simp; omega
+          rw [Nat.log_eq_iff]; simpa using ⟨by omega, h⟩
+          simp; omega
         simp [this]
       have aux1 : m / 10 ≠ 0 := by omega
       rw [Nat.digits_getLast m (by simp) (Nat.digits_ne_nil_iff_ne_zero.mpr mne) (Nat.digits_ne_nil_iff_ne_zero.mpr aux1)]
       specialize ih (m / 10) (by omega) aux1
       rw [Nat.div_div_eq_div_mul, ← pow_succ', Nat.log_div_base] at ih
-      rw [Nat.sub_add_cancel] at ih; exact ih
-      rw [← Nat.pow_le_iff_le_log]; all_goals omega
+      rwa [Nat.sub_add_cancel] at ih
+      rw [Nat.le_log_iff_pow_le]
+      all_goals omega
 
 /-Determine the number of four-digit integers $n$ such that $n$ and $2 n$ are both palindromes.-/
 theorem problem90 {n a b c d : ℕ} (hn : Nat.digits 10 n = [d, c, b, a]) :
@@ -37,9 +38,7 @@ theorem problem90 {n a b c d : ℕ} (hn : Nat.digits 10 n = [d, c, b, a]) :
   have npos : n ≠ 0 := by intro h; simp [h] at hn
   have apos : a ≠ 0 := by
     have := Nat.getLast_digit_ne_zero 10 npos
-    simp only [hn, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons,
-      cons_ne_self, getLast_singleton] at this
-    exact this
+    simpa [hn] using this
   replace npos : 1000 ≤ n := by
     simp only [hn', Nat.ofDigits_eq_sum_mapIdx, mapIdx_cons, pow_zero, mul_one, zero_add, pow_one,
       Nat.reduceAdd, Nat.reducePow, mapIdx_nil, sum_cons, sum_nil, add_zero]
@@ -134,7 +133,7 @@ theorem problem90 {n a b c d : ℕ} (hn : Nat.digits 10 n = [d, c, b, a]) :
   -- Specialize `h2` at $1$ shows that the two digits above are equal
     rw [this] at sd2; specialize h2 1 (by simp) (by simp)
     simp only [Nat.add_one_sub_one] at h2; simp only [Set.mem_Icc, zero_le, true_and]
-  -- The goal follows from `omega`
+  -- The goal follows from the `omega` tactic
     split_ands; all_goals omega
 -- Conversely, it is straightforward to check that under the assumptions in question, both $n$ and $2*n$ are palindrome
   rintro ⟨h1, h2, h3, h4⟩; simp only [Set.mem_Icc, zero_le, true_and] at h3 h4
@@ -142,7 +141,8 @@ theorem problem90 {n a b c d : ℕ} (hn : Nat.digits 10 n = [d, c, b, a]) :
   constructor; simp only [hn, reverse_cons, reverse_nil, nil_append, cons_append]
   suffices : Nat.digits 10 (2 * n) = [2 * a, 2 * b, 2 * b, 2 * a]
   · simp [this]
-  apply Nat.ofDigits_inj_of_len_eq; exact (show 1<10 by simp)
+  apply Nat.ofDigits_inj_of_len_eq
+  · exact (show 1<10 by simp)
   · rw [Nat.digits_len]
     simp only [length_cons, length_nil, zero_add, Nat.reduceAdd, Nat.reduceEqDiff]
     rw [Nat.log_eq_iff, hn']; simp only [Nat.reducePow, Nat.ofDigits_eq_sum_mapIdx, mapIdx_cons,

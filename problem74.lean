@@ -88,7 +88,7 @@ theorem problem74 {f : ℕ → ℕ} (hf : ∀ n ≠ 0, f n = #(n.primeFactors �
         all_goals grind
       intro hp; norm_num [hp]; omega
     · suffices : n.primeFactors ∩ range 6 = {5}
-      · norm_num [this, X]
+      · simp only [this, card_singleton, X]
         rw [ite_cond_eq_false, ite_cond_eq_false, ite_cond_eq_true]
         all_goals grind
       simp only [Finset.ext_iff, mem_inter, Nat.mem_primeFactors, ne_eq, mem_range, and_assoc,
@@ -99,7 +99,7 @@ theorem problem74 {f : ℕ → ℕ} (hf : ∀ n ≠ 0, f n = #(n.primeFactors �
         any_goals grind
       intro hp; norm_num [hp]; omega
     suffices : n.primeFactors ∩ range 6 = ∅
-    · norm_num [this, X]
+    · simp only [this, card_empty, X]
       repeat rw [ite_cond_eq_false]
       all_goals grind
     simp only [Finset.ext_iff, mem_inter, Nat.mem_primeFactors, ne_eq, mem_range, and_assoc,
@@ -114,8 +114,7 @@ theorem problem74 {f : ℕ → ℕ} (hf : ∀ n ≠ 0, f n = #(n.primeFactors �
     intro n nne p q copr; simp only [mul_ite, mul_one, mul_zero, X]
     split_ifs with qdvd pdvd muldvd muldvd muldvd
     any_goals rfl
-    · convert muldvd; simp only [false_iff, Decidable.not_not]
-      exact copr.mul_dvd_of_dvd_of_dvd pdvd qdvd
+    · convert muldvd; simpa using copr.mul_dvd_of_dvd_of_dvd pdvd qdvd
     · convert pdvd; simp only [false_iff, Decidable.not_not]
       apply dvd_of_mul_right_dvd; exact muldvd
     convert qdvd; simp only [false_iff, Decidable.not_not]

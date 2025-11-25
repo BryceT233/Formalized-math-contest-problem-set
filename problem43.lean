@@ -16,7 +16,7 @@ lemma lm : ∀ n : ℕ, ∑ i ∈ range n, (i : ℝ) ^ 2 = n * (n - 1) * (2 * n 
     rw [sum_range_succ, ih]; push_cast
     ring
 
-/-Example 2 Let $n$ be a positive integer, and real numbers $x_{1}, x_{2}, \cdots, x_{n}$ satisfy $x_{1} \leqslant x_{2} \leqslant \cdots \leqslant x_{n}$. Prove:
+/-Let $n$ be a positive integer, and real numbers $x_{1}, x_{2}, \cdots, x_{n}$ satisfy $x_{1} \leqslant x_{2} \leqslant \cdots \leqslant x_{n}$. Prove:
 $$
 \begin{array}{l}
 \left(\sum_{i=1}^{n} \sum_{j=1}^{n}\left|x_{i}-x_{j}\right|\right)^{2} \\
@@ -110,11 +110,12 @@ theorem problem43 (n : ℕ) (x : ℕ → ℝ) (npos : 0 < n) (xmono : MonotoneOn
     apply sum_congr rfl; grind
   rw [this, mul_pow]
 -- Use Cauchy-Schwartz inequality to estimate an upper bound for LHS
-  let A : EuclideanSpace ℝ (Fin n) := fun i => 2 * i - n + 1
-  let B : EuclideanSpace ℝ (Fin n) := fun i => x i
+  let A : EuclideanSpace ℝ (Fin n) := (EuclideanSpace.equiv _ _).symm (fun i => 2 * i - n + 1)
+  let B : EuclideanSpace ℝ (Fin n) := (EuclideanSpace.equiv _ _).symm (fun i => x i)
   have CS := abs_real_inner_le_norm B A
-  simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial, sum_fin_eq_sum_range, dite_eq_ite,
-    EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, B, A] at CS
+  simp only [PiLp.continuousLinearEquiv_symm_apply, PiLp.inner_apply, RCLike.inner_apply,
+    Real.ringHom_apply, sum_fin_eq_sum_range, dite_eq_ite, EuclideanSpace.norm_eq, Real.norm_eq_abs,
+    sq_abs, B, A] at CS
   rw [← Real.sqrt_mul, Real.le_sqrt, sq_abs] at CS
   replace this : (∑ x_1 ∈ range n, if x_1 < n then (2 * x_1 - n + 1) * x x_1 else 0) =
   ∑ x_1 ∈ range n, (2 * x_1 - n + 1) * x x_1 := by

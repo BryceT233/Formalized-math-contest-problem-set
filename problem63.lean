@@ -27,7 +27,7 @@ theorem problem63 {a : ℕ → ℤ} : (∃ x : ℝ, ∀ i ∈ Icc 1 2019, a i = 
     simp only [mem_Icc, Set.mem_iInter, Set.mem_Ico, and_imp, S, s] at hx
     use x; intro i ige ile; symm; rw [Int.floor_eq_iff]
     specialize hx i ige ile; rw [div_le_iff₀'] at hx
-    rw [lt_div_iff₀'] at hx; exact hx
+    rwa [lt_div_iff₀'] at hx
     all_goals positivity
 -- Denote $tmax$ to be the largest number among $a_i/i$ and $t'min$ to be the smallest number among $(a_i+1)/i$
   let t := image (fun i => (a i : ℝ) / i) (Icc 1 2019)

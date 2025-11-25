@@ -177,8 +177,7 @@ theorem problem77 {f : ℝ → ℝ} (hf1 : ∀ x ∉ Set.Ioc (-2 ^ ((1 : ℝ) / 
         rw [fpos]; by_contra!
         specialize hf2 _ this.left this.right
         rw [h] at hf2; linarith only [pos1, hf2]
-      apply aux' at h; rw [← neg_add, add_comm]
-      exact h
+      apply aux' at h; rwa [← neg_add, add_comm]
   -- Conversely, we show $f^[10] (x)=1$ when $x=1$ or $x=-(√3 + 1)/2$ by computations
     intro hx; sorry
 -- Substitute $S={1, -(√3 + 1) / 2}$ and finish the goal

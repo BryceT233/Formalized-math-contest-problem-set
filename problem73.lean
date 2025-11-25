@@ -101,7 +101,7 @@ theorem problem73 {good : ℕ → Prop} (h0 : ∀ t, good t ↔ 0 < t ∧
     replace asucc' : ∀ n ≤ 15, a n = 15 - n := by
       intro n nle; induction n using Nat.twoStepInduction with
       | zero => simp [a0]
-      | one => simpa [a1, Nat.add_one_sub_one]
+      | one => simpa [a1]
       | more n ih1 ih2 =>
         specialize ih1 (by omega)
         specialize ih2 (by omega)
@@ -124,11 +124,9 @@ theorem problem73 {good : ℕ → Prop} (h0 : ∀ t, good t ↔ 0 < t ∧
   · set a : ℕ → ℕ := Nat.twoStepInduction 15 56 (fun n hn hn1 => 4 * hn1 - hn) with ha
     clear_value a; rw [funext_iff] at ha
     have a0 : a 0 = 15 := by
-      simp only [ha]; unfold Nat.twoStepInduction
-      rfl
+      simp [ha, Nat.twoStepInduction]
     have a1 : a 1 = 56 := by
-      simp only [ha]; unfold Nat.twoStepInduction
-      rfl
+      simp [ha, Nat.twoStepInduction]
   -- Prove that $a$ has a two step linarit recursive relation by definition
     have asucc : ∀ n > 0, a (n + 1) = 4 * a n - a (n - 1) := by
       intro n npos; rw [show n+1 = (n-1).succ.succ by omega]
@@ -184,11 +182,9 @@ theorem problem73 {good : ℕ → Prop} (h0 : ∀ t, good t ↔ 0 < t ∧
   set a : ℕ → ℕ := Nat.twoStepInduction 15 224 (fun n hn hn1 => 15 * hn1 - hn) with ha
   clear_value a; rw [funext_iff] at ha
   have a0 : a 0 = 15 := by
-    simp only [ha]; unfold Nat.twoStepInduction
-    rfl
+    simp [ha, Nat.twoStepInduction]
   have a1 : a 1 = 224 := by
-    simp only [ha]; unfold Nat.twoStepInduction
-    rfl
+    simp [ha, Nat.twoStepInduction]
 -- Prove that $a$ has a two step linarit recursive relation by definition
   have asucc : ∀ n > 0, a (n + 1) = 15 * a n - a (n - 1) := by
     intro n npos; rw [show n+1 = (n-1).succ.succ by omega]

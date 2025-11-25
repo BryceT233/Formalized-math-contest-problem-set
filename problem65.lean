@@ -25,15 +25,15 @@ theorem problem65 (a b c : ℝ) (apos : 0 < a) (bpos : 0 < b) (cpos : 0 < c)
     + (c + a) / (2 + c + a) ∧ ((a + b) / (2 + a + b) + (b + c) / (2 + b + c) +
     (c + a) / (2 + c + a) = 3 / 2 ↔ a = 1 ∧ b = 1 ∧ c = 1) := by
 -- Set up the following two vectors in $ℝ³$ and apply Cauchy-Schwartz inequality
-  let x : EuclideanSpace ℝ (Fin 3) := ![√(a + b) / √(2 + a + b),
+  let x : EuclideanSpace ℝ (Fin 3) := !₂[√(a + b) / √(2 + a + b),
   √(b + c) / √(2 + b + c), √(c + a) / √(2 + c + a)]
-  let y : EuclideanSpace ℝ (Fin 3) := ![√(2 + a + b), √(2 + b + c), √(2 + c + a)]
+  let y : EuclideanSpace ℝ (Fin 3) := !₂[√(2 + a + b), √(2 + b + c), √(2 + c + a)]
   have CS := abs_real_inner_le_norm x y
 -- Simplify the inequality
   rw [← pow_le_pow_iff_left₀ _ _ (show 2≠0 by simp)] at CS
   rw [sq_abs, mul_pow] at CS
-  simp only [PiLp.inner_apply, Nat.succ_eq_add_one, Nat.reduceAdd, RCLike.inner_apply, conj_trivial,
-    EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, x, y] at CS
+  simp only [PiLp.inner_apply, RCLike.inner_apply, ringHom_apply, EuclideanSpace.norm_eq,
+    norm_eq_abs, sq_abs, x, y] at CS
   simp only [sum_fin_eq_sum_range, show range 3 = {0, 1, 2} by rfl, mem_insert, zero_ne_one,
     mem_singleton, OfNat.zero_ne_ofNat, or_self, not_false_eq_true, sum_insert, Nat.ofNat_pos,
     ↓reduceDIte, Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero, OfNat.one_ne_ofNat,
@@ -112,8 +112,8 @@ theorem problem65 (a b c : ℝ) (apos : 0 < a) (bpos : 0 < b) (cpos : 0 < c)
         pow_eq_zero_iff] at le1
       rcases le1 with _|h
       · linarith
-      rw [sub_eq_zero, sqrt_eq_iff_eq_sq, sq_sqrt] at h
-      exact h; all_goals positivity
+      rwa [sub_eq_zero, sqrt_eq_iff_eq_sq, sq_sqrt] at h
+      all_goals positivity
   -- Prove that $b=c$
     replace le2 : b = c := by
       symm at le2
@@ -129,12 +129,12 @@ theorem problem65 (a b c : ℝ) (apos : 0 < a) (bpos : 0 < b) (cpos : 0 < c)
         pow_eq_zero_iff] at le2
       rcases le2 with _|h
       · linarith
-      rw [sub_eq_zero, sqrt_eq_iff_eq_sq, sq_sqrt] at h
-      exact h; all_goals positivity
+      rwa [sub_eq_zero, sqrt_eq_iff_eq_sq, sq_sqrt] at h
+      all_goals positivity
   -- The goal follows easily from $a=c$ and $b=c$
     simp only [le1, le2, and_self]; rw [le1, le2] at h
     replace h : √c = 1 := by linarith only [h]
-    rw [sqrt_eq_iff_eq_sq] at h; simp only [one_pow] at h
-    exact h; all_goals positivity
+    rwa [sqrt_eq_iff_eq_sq, one_pow] at h
+    all_goals positivity
 -- Conversely, it is straightforward to check that the equality holds true when $a$, $b$ and $c$ are all $1$
   grind; all_goals positivity

@@ -27,8 +27,8 @@ theorem problem45 (a b : ℕ) (hpos : 0 < a ∧ 0 < b) :
     have hpf : a.primeFactors = b.primeFactors := by
       apply_fun fun t => t.primeFactors at heq
       repeat rw [Nat.primeFactors_pow] at heq
-      exact heq; simp only [ne_eq, Nat.pow_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true,
-        and_true]
+      exact heq
+      simp only [ne_eq, Nat.pow_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, and_true]
       all_goals omega
   -- Rewrite $a^2$ and $b$ to multiples of their gcd, prove the multiples and gcd are all positive
     obtain ⟨α, β, copr, hα, hβ⟩ := Nat.exists_coprime (a ^ 2) b

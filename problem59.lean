@@ -10,7 +10,7 @@ lemma lm : ∀ n, 3 ∣ (n + 1) * n * (2 * n + 1) := by
   nth_rw 3 [Nat.mul_mod]
   have := Nat.mod_lt n (show 3>0 by simp)
   interval_cases n % 3
-  all_goals norm_num
+  all_goals simp
 
 /-Let $N_0$ be a positive integer. Let $M = \lfloor \sqrt{N_0} \rfloor$.
 Define the function $f(k)$ for a positive integer $k$ as follows:

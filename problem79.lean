@@ -120,8 +120,7 @@ theorem problem79 : IsGreatest {p | ∃ x : ℕ → ℝ, p = #{n ∈ Icc 1 2022 
         specialize pUn 2022
         simp only [Nat.one_le_ofNat, le_refl, and_self, true_iff] at pUn
         rcases pUn with _|h; contradiction
-        simp only [mem_filter, mem_Icc, Nat.one_le_ofNat, le_refl, and_self, true_and, sn] at h
-        exact h
+        simpa [sn] using h
     -- Prove that $sn$ coincides with the set of even numbers in $[1,1011]$, in other words, $x_(2*i)$ is always negative
       have aux : image (fun i => 2 * i) (Icc 1 1011) = sn := by
         apply eq_of_subset_of_card_le
@@ -135,7 +134,7 @@ theorem problem79 : IsGreatest {p | ∃ x : ℕ → ℝ, p = #{n ∈ Icc 1 2022 
           | base =>
             use 1010; intro m mgt _ mle
             replace mle : m = 1011 := by omega
-            norm_num [mle]; exact lneg
+            simpa [mle]
           | step i ih =>
             by_cases h' : i = 1011
             · simpa [h']
@@ -185,9 +184,7 @@ theorem problem79 : IsGreatest {p | ∃ x : ℕ → ℝ, p = #{n ∈ Icc 1 2022 
         · rw [show 2*i+1 = 2*(i+1)-1 by omega]
           apply aux'; all_goals omega
         push_neg at h; norm_num [h, xeq]
-        specialize aux' 1; simp only [le_refl, Nat.one_le_ofNat, mul_one, Nat.add_one_sub_one,
-          forall_const] at aux'
-        exact aux'
+        specialize aux' 1; simpa using aux'
       simp only [Left.neg_pos_iff]; have := (aux (2*i)).mp
       simp only [mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false, exists_eq_right,
         and_imp] at this

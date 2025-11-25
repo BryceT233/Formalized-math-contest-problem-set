@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset Classical
@@ -19,19 +25,21 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
     ∀ k > 0, ∀ d : ℕ → ℕ, (∀ i ∈ Icc 1 k, d i ∣ b) → a < ∑ i ∈ Icc 1 k, (1 : ℚ) / d i →
     ∃ I ⊆ Icc 1 k, a = ∑ i ∈ I, (1 : ℚ) / d i) (a : ℕ) (apos : 0 < a) : ∀ b, pleasing a b ↔
     ∃ p, Nat.Prime p ∧ ∃ l, p ^ l = b := by
-  intro b; rw [hplz]
-  clear hplz pleasing; constructor
+  intro b; rw [hplz]; clear hplz pleasing
+  constructor
   -- Take any $a$-pleasing number $b$, we need to prove that $b$ is a power of prime
   · rintro ⟨h, bpos, hab⟩; clear h
     by_cases hb : b = 1
     -- Trivial case when $b=1$
-    · simp only [hb, Nat.pow_eq_one, exists_or_eq_right, and_true]; use 2; norm_num
+    · simp only [hb, Nat.pow_eq_one, exists_or_eq_right, and_true]
+      use 2; norm_num
   -- If $b≠1$, we proceed by contradiction and take $q$ to be the smallest prime divisor of $b$
     by_contra! hcon; have EX := Nat.exists_prime_and_dvd hb
     have lt_q := Nat.le_find_iff EX
     obtain ⟨qpr, qdvd⟩ := Nat.find_spec EX
     set q := Nat.find EX; specialize lt_q q
-    simp at lt_q; have := qpr.two_le
+    simp only [le_refl, not_and, true_iff] at lt_q
+    have := qpr.two_le
     have : b / q ^ b.factorization q ≠ 1 := by
       intro h; rw [Nat.div_eq_iff_eq_mul_left, one_mul] at h
       symm at h; revert h; rw [imp_false]
@@ -49,8 +57,7 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
       by_contra!; rw [Nat.le_iff_lt_or_eq] at this
       rcases this with h|h
       · specialize lt_q p h ppr
-        revert lt_q; rw [imp_false, not_not]
-        exact pdvd'
+        revert lt_q; rwa [imp_false, not_not]
       rw [h] at pdvd; revert pdvd; rw [imp_false]
       rw [← qpr.coprime_iff_not_dvd]; apply Nat.coprime_ordCompl
       exact qpr; omega
@@ -61,10 +68,7 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
       all_goals omega
   -- Define a function $d$ to be $p$ for all $1 ≤ i ≤ k - 1$ and $q$ otherwise, prove that $d$ satisfies the assumptions in `hab`
     let d : ℕ → ℕ := fun i => if i ∈ Icc 1 (k - 1) then p else q
-    have aux1 : ∀ i ∈ Icc 1 k, d i ∣ b := by
-      intro i hi; rw [mem_Icc] at hi
-      dsimp [d]; split_ifs with h
-      exact pdvd'; exact qdvd
+    have aux1 : ∀ i ∈ Icc 1 k, d i ∣ b := by grind
     have aux2 : a < ∑ i ∈ Icc 1 k, (1 : ℚ) / d i := by
       rw [show k = k-1+1 by omega, sum_Icc_succ_top]
       rw [show k-1+1 = k by omega]
@@ -75,9 +79,10 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
         nsmul_eq_mul, gt_iff_lt]
       dsimp [d]; rw [ite_cond_eq_false, Nat.cast_sub]
       push_cast; rw [← sub_pos]; simp only [Nat.cast_mul, sub_pos, k]
-      field_simp; rw [lt_div_iff₀, ← sub_pos]
-      ring_nf; rw [sub_pos]; norm_cast
-      positivity; omega
+      field_simp; rw [← sub_pos]
+      ring_nf; rw [sub_pos]
+      norm_cast
+      omega
       simp only [mem_Icc, eq_iff_iff, iff_false, not_and, not_le,
         tsub_lt_self_iff, zero_lt_one, and_true]
       all_goals omega
@@ -99,8 +104,10 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
       rw [show a*p = #(Icc 1 k) by simp [k]]
       apply card_lt_card; rw [ssubset_iff]
       use k; constructor; exact h
-      apply insert_subset; simp only [mem_Icc, le_refl, and_true]; omega
-      exact sbst; simp only [Nat.cast_pos]; omega
+      apply insert_subset; simp only [mem_Icc, le_refl, and_true]
+      omega
+      · exact sbst
+      · simp only [Nat.cast_pos]; omega
   -- Subcase when $k$ belongs to $I$, we apply `sum_eq_sum_diff_singleton_add` to isolate this term
     push_neg at h; rw [sum_eq_sum_diff_singleton_add h] at hI
     have : ∀ x ∈ I \ {k}, (1 : ℚ) / d x = 1 / p := by
@@ -170,7 +177,7 @@ theorem problem3 (pleasing : ℕ → ℕ → Prop) (hplz : ∀ a b, pleasing a b
 -- Isolate the $j$-th term in `hD` and multiply the both sides of `lt_c` and `hD` by $d j$
   rw [sum_eq_sum_diff_singleton_add jmem] at *
   rw [add_div', le_div_iff₀, sum_mul] at hD
-  rw [← mul_lt_mul_right (show 0 < (d j : ℚ) by positivity), sum_mul] at lt_c
+  rw [← mul_lt_mul_iff_left₀ (show 0 < (d j : ℚ) by positivity), sum_mul] at lt_c
 -- Rewrite the summation to ℕ-type and apply `norm_cast` tactics to `lt_c` and `hD`
   have : ∀ i ∈ D \ {j}, (1 : ℚ) / d i * d j = (d j / d i : ℕ) := by
     intro i hi; rw [mem_sdiff] at hi

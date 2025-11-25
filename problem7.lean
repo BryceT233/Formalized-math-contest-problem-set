@@ -1,9 +1,3 @@
-/-
-Copyright (c) 2025 . All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
--/
-
 import Mathlib
 
 open Finset
@@ -45,7 +39,8 @@ theorem problem7 (l : ℕ → ℤ) (hl : ∀ n > 0, l n =
       have : l 9 = 1 := by
         rw [show 9 = 3^2 by rfl]; apply l_sq
         simp
-      constructor; exact this
+      constructor
+      · exact this
       rw [this, show 10 = 2*5 by rfl, l_mul]
       rw [l_p, l_p]; all_goals norm_num
   -- Take $m$ to be the largest member in the set

@@ -24,14 +24,14 @@ theorem problem53 (N : ℕ) (Ngt : 1 < N) :
         intro h; simp only [h, Nat.coprime_zero_right] at copr
         omega
       constructor; omega
-      rw [← hl, Nat.coprime_self_sub_right]
-      exact copr; omega
+      rwa [← hl, Nat.coprime_self_sub_right]
+      omega
     rintro ⟨klt, copr⟩; use N-k
     have kpos : k ≠ 0 := by
       intro h; simp only [h, Nat.coprime_zero_right] at copr
       omega
     split_ands; any_goals omega
-    rw [Nat.coprime_self_sub_right]; exact copr
+    rwa [Nat.coprime_self_sub_right]
     omega
   nth_rw 2 [← himg]; rw [sum_image]
   apply sum_congr rfl; grind

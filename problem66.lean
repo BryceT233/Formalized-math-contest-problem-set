@@ -51,7 +51,7 @@ theorem problem66 {S : Set (ℤ × ℤ × ℤ × ℤ × ℤ × ℤ)}
     rw [Int.abs_eq_natAbs]; norm_cast; apply h2
     intro a b c d e f h; simp only [Set.mem_setOf_eq, SN] at h
     zify at h; zify; rw [abs_dvd]; apply hk
-    simp only [hS, Set.mem_setOf_eq]; exact h
+    simpa [hS] using h
   simp only [IsGreatest, Set.mem_setOf_eq, Prod.forall, upperBounds, SN]
   constructor
   -- Prove that $24$ divides the product in question

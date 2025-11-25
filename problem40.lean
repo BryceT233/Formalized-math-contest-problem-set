@@ -146,7 +146,7 @@ theorem problem40 : let S := {n ∈ Ioo 0 20000 | ∃ m, m = n + 2005 ∧
       -- Prove that $q$ is less than $5$
         have qlt : q < 5 := by
           rw [← Nat.pow_lt_pow_iff_left (show 6≠0 by simp)]
-          rw [← mul_lt_mul_left (show 0<2^2 by simp)]; calc
+          rw [← mul_lt_mul_iff_right₀ (show 0<2^2 by simp)]; calc
             _ ≤ p ^ 2 * q ^ 6 := by gcongr
             _ < _ := by
               rw [xeq]; omega
@@ -171,7 +171,7 @@ theorem problem40 : let S := {n ∈ Ioo 0 20000 | ∃ m, m = n + 2005 ∧
     -- Prove that $q$ is less than $5$
       have plt : p < 5 := by
         rw [← Nat.pow_lt_pow_iff_left (show 6≠0 by simp)]
-        rw [← mul_lt_mul_right (show 0<2^2 by simp)]; calc
+        rw [← mul_lt_mul_iff_left₀ (show 0<2^2 by simp)]; calc
           _ ≤ p ^ 6 * q ^ 2 := by gcongr
           _ < _ := by
             rw [xeq]; omega

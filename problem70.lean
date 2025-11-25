@@ -1,9 +1,16 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Function Finset Classical
 
-/- Let $S$ be a finite set, and let $\mathcal{A}$ be the set of all functions from $S$ to $S$. Let $f$ be an element of $\mathcal{A}$, and let $T=f(S)$ be the image of $S$ under $f$.
-Suppose that $f \circ g \circ f \neq g \circ f \circ g$ for every $g$ in $\mathcal{A}$ with $g \neq f$. Show that $f(T)=T$. -/
+/- Let $S$ be a finite set, and let $\mathcal{A}$ be the set of all functions from $S$ to $S$. Let $f$ be an element of $\mathcal{A}$,
+and let $T=f(S)$ be the image of $S$ under $f$. Suppose that $f \circ g \circ f \neq g \circ f \circ g$ for every $g$ in $\mathcal{A}$ with $g \neq f$.
+Show that $f(T)=T$. -/
 theorem problem70 {S : Type u} [Sfin : Fintype S] (f : S → S) {T : Finset S}
     (hT : T = image f Finset.univ) (hf : ∀ g : S → S, g ≠ f → f ∘ g ∘ f ≠ g ∘ f ∘ g) :
     image f T = T := by
@@ -63,9 +70,8 @@ theorem problem70 {S : Type u} [Sfin : Fintype S] (f : S → S) {T : Finset S}
     | succ n hmn ih => rw [aux]; all_goals assumption
 -- Prove that for any $m≥N$, $f^[m] x$ belongs to $itf_img N$
   have aux'' : ∀ m ≥ N, ∀ x, f^[m] x ∈ itf_img N := by
-    intro m mge x; rw [← aux' m]
-    simp only [mem_image, mem_univ, true_and, exists_apply_eq_apply, itf_img]
-    exact mge
+    intro m mge x; rw [← aux' m mge]
+    · simp [itf_img]
 -- Prove that $f$ is bijective on $itf_img N$
   have fbij : Set.BijOn f (itf_img N) (itf_img N) := by
     rw [Set.BijOn]; split_ands
@@ -92,7 +98,7 @@ theorem problem70 {S : Type u} [Sfin : Fintype S] (f : S → S) {T : Finset S}
     intro x; specialize aux (f^[N] x)
     replace aux := aux.mpr (by use x)
     rcases aux with ⟨y, hy⟩; use y; calc
-      _ = f^[N+1] y := by
+      _ = f^[N + 1] y := by
         rw [add_comm, iterate_add_apply, iterate_one]
       _ = _ := by rw [← hy]; rfl
 -- Define a permutation $σ$ of $itf_img N$ from this bijection and denote its order by $r$
@@ -121,7 +127,8 @@ theorem problem70 {S : Type u} [Sfin : Fintype S] (f : S → S) {T : Finset S}
   · simp only [ge_iff_le, Nat.reduceLeDiff]; calc
       _ = 1 * 1 * 1 := by simp
       _ ≤ _ := by
-        gcongr; simp; exact Nat.le_max_right N 1
+        gcongr; simp
+        exact Nat.le_max_right N 1
         omega
   ring_nf; ext x; calc
     _ = f^[3 + max N 1 * r * 2 + 2 * max N 1 * r] x := by

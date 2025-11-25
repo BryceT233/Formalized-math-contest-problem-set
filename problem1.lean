@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Real
@@ -17,9 +23,9 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
   have : 0 < x 3 := by apply xpos
   clear xpos
 -- Set up two vectors $A$ and $B$ in ℝ⁶ and prepare to use Cauchy-Schwartz inequality
-  set A : EuclideanSpace ℝ (Fin 6) := ![(x 0 + x 1) / √(x 0 * x 1), (x 0 + x 2) / √(x 0 * x 2), (x 0 + x 3) / √(x 0 * x 3),
+  set A : EuclideanSpace ℝ (Fin 6) := !₂[(x 0 + x 1) / √(x 0 * x 1), (x 0 + x 2) / √(x 0 * x 2), (x 0 + x 3) / √(x 0 * x 3),
   (x 1 + x 2) / √(x 1 * x 2), (x 1 + x 3) / √(x 1 * x 3), (x 2 + x 3) / √(x 2 * x 3)] with hA
-  set B : EuclideanSpace ℝ (Fin 6) := ![√(x 0 * x 1), √(x 0 * x 2), √(x 0 * x 3), √(x 1 * x 2), √(x 1 * x 3), √(x 2 * x 3)] with hB
+  set B : EuclideanSpace ℝ (Fin 6) := !₂[√(x 0 * x 1), √(x 0 * x 2), √(x 0 * x 3), √(x 1 * x 2), √(x 1 * x 3), √(x 2 * x 3)] with hB
 -- Prove that $A$ is nonzero
   have Ane : A ≠ 0 := by
     rw [ne_eq, ← norm_eq_zero]; apply ne_of_gt
@@ -52,28 +58,25 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
 -- Prove the conditions of equality is equivalent to the conditions given in the goal
   have aux3 : (∃ r : ℝ, r ≠ 0 ∧ B = r • A) ↔ x 1 = x 0 ∧ x 2 = x 0 ∧ x 3 = x 0 := by
     constructor
-    · rintro ⟨r, rne, hr⟩; simp only [Fin.isValue, B, A] at hr
-      rw [funext_iff] at hr; simp at hr
+    · rintro ⟨r, rne, hr⟩
+      simp only [Fin.isValue, ← WithLp.toLp_smul, Matrix.smul_cons, smul_eq_mul, Matrix.smul_empty,
+        WithLp.toLp.injEq, Matrix.vecCons_inj, and_true, B, A] at hr
       split_ands
-      · have h := hr 1; have h' := hr 3
-        simp only [Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_zero,
-          Matrix.cons_val] at h h'
+      · have h := hr.right.left; have h' := hr.right.right.right.left
         rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
           ← inv_inj, inv_div] at h h'
         rw [← h, add_div, add_div] at h'
         repeat rw [div_mul_cancel_left₀, div_mul_cancel_right₀] at h'
         simp only [Fin.isValue, add_right_inj, inv_inj] at h'; exact h'
         all_goals positivity
-      · have h := hr 0; have h' := hr 3
-        simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val] at h h'
+      · have h := hr.left; have h' := hr.right.right.right.left
         rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
           ← inv_inj, inv_div] at h h'
         rw [← h, add_div, add_div] at h'
         repeat rw [div_mul_cancel_left₀, div_mul_cancel_right₀] at h'
         rw [add_comm] at h'; simp only [Fin.isValue, add_right_inj, inv_inj] at h'
         exact h'; all_goals positivity
-      have h := hr 0; have h' := hr 4
-      simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val] at h h'
+      have h := hr.left; have h' := hr.right.right.right.right.left
       rw [mul_div, eq_div_iff, ← pow_two, sq_sqrt, ← div_eq_iff,
         ← inv_inj, inv_div] at h h'
       rw [← h, add_div, add_div] at h'
@@ -85,10 +88,9 @@ theorem problem1 (x : Fin 4 → ℝ) (xpos : ∀ i, 0 < x i) : 8 + (∑ i, x i) 
     simp only [Fin.isValue, h01, ← two_mul, ← pow_two, h02, h03] at hA hB
     repeat rw [sqrt_sq] at hA hB
     repeat rw [mul_div_cancel_right₀] at hA
-    use x 0 / 2; constructor; positivity
-    rw [funext_iff]; intro i
-    simp only [hB, Fin.isValue, hA, PiLp.smul_apply, smul_eq_mul]
-    fin_cases i; any_goals simp
+    use x 0 / 2; constructor
+    · positivity
+    simp [← WithLp.toLp_smul, hA, hB]
     all_goals positivity
 -- Use what we have proved so far to finish the goal
   rw [ge_iff_le, div_le_iff₀, eq_div_iff, ← aux2, ← aux1,

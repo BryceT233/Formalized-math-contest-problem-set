@@ -61,20 +61,19 @@ theorem problem48 (a b c d : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
   constructor
   -- Apply Cauchy-Schwartz inequality to prove the first subgoal
   · let A : EuclideanSpace ℝ (Fin 4) :=
-    ![|a - c| / √(a + b + c), |b - d| / √(b + c + d), |c - a| / √(c + d + a), |d - b| / √(d + a + b)]
+    !₂[|a - c| / √(a + b + c), |b - d| / √(b + c + d), |c - a| / √(c + d + a), |d - b| / √(d + a + b)]
     let B : EuclideanSpace ℝ (Fin 4) :=
-    ![√(a + b + c), √(b + c + d), √(c + d + a), √(d + a + b)]
+    !₂[√(a + b + c), √(b + c + d), √(c + d + a), √(d + a + b)]
     have CS := abs_real_inner_le_norm A B
   -- Simplify the inequality, the goal follows
-    simp only [PiLp.inner_apply, Nat.succ_eq_add_one, Nat.reduceAdd, RCLike.inner_apply,
-      conj_trivial, Finset.sum_fin_eq_sum_range, EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, A,
-      B] at CS
+    simp only [PiLp.inner_apply, RCLike.inner_apply, ringHom_apply, Finset.sum_fin_eq_sum_range,
+      EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, A, B] at CS
     simp only [show Finset.range 4 = {0, 1, 2, 3} by rfl, Finset.mem_insert, zero_ne_one,
       OfNat.zero_ne_ofNat, Finset.mem_singleton, or_self, not_false_eq_true, Finset.sum_insert,
       Nat.ofNat_pos, ↓reduceDIte, Fin.zero_eta, Fin.isValue, Matrix.cons_val_zero,
       OfNat.one_ne_ofNat, Nat.one_lt_ofNat, Fin.mk_one, Matrix.cons_val_one, Nat.reduceEqDiff,
-      Nat.reduceLT, Fin.reduceFinMk, Matrix.cons_val, Finset.sum_singleton, Nat.lt_add_one, ←
-      add_assoc] at CS
+      Nat.reduceLT, Fin.reduceFinMk, Matrix.cons_val, Finset.sum_singleton, Nat.lt_add_one,
+      ← add_assoc] at CS
     repeat rw [mul_div_cancel₀] at CS
     rw [abs_eq_self.mpr, ← sqrt_mul, le_sqrt] at CS
     repeat rw [div_pow, sq_abs, sq_sqrt] at CS
@@ -85,7 +84,7 @@ theorem problem48 (a b c d : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
     3 * (a + b + c + d) := by ring
     rw [this, ← div_le_iff₀] at CS
     apply le_trans _ CS; rw [← sub_nonneg]
-    field_simp; apply div_nonneg
+    field_simp; simp only [zero_mul]
     · set u := a - c with hu; clear_value u
       set v := b - d with hv; clear_value v
       ring_nf; calc
@@ -117,7 +116,7 @@ theorem problem48 (a b c d : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)
   rw [div_le_div_iff₀, one_mul]; calc
     _ ≤ ((b + d) * b * d + (a + c) * a * c) * (a + b + c + d) := by
       apply mul_le_mul_of_nonneg_right
-      rw [sub_eq_add_neg]; apply le_trans (abs_add _ _)
+      rw [sub_eq_add_neg]; apply le_trans (abs_add_le _ _)
       rw [abs_eq_self.mpr, abs_eq_neg_self.mpr]
       ring_nf; rfl; simp only [Left.neg_nonpos_iff]
       all_goals positivity

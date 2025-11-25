@@ -1,8 +1,15 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset
 
-/-Let $D$ be an even positive natural number. Determine the minimum natural number $k$ such that for any $k$ integers $a_1, \dots, a_k$, there exist distinct indices $i,j \in \{1, \dots, k\}$ such that $a_i+a_j$ is divisible by $D$ or $a_i-a_j$ is divisible by $D$. Show that $k = D/2 + 2$.-/
+/-Let $D$ be an even positive natural number. Determine the minimum natural number $k$ such that for any $k$ integers $a_1, \dots, a_k$,
+there exist distinct indices $i,j \in \{1, \dots, k\}$ such that $a_i+a_j$ is divisible by $D$ or $a_i-a_j$ is divisible by $D$. Show that $k = D/2 + 2$.-/
 theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
     IsLeast {k | ∀ a : ℕ → ℤ, ∃ i ∈ Icc 1 k, ∃ j ∈ Icc 1 k, i ≠ j ∧
     ((D : ℤ) ∣ a i + a j ∨ (D : ℤ) ∣ a i - a j)} (D / 2 + 2) := by
@@ -34,7 +41,7 @@ theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
         rw [Int.emod_emod, Int.emod_eq_of_lt]
         simp only [Nat.cast_nonneg]; omega
       by_cases modD : a n % D ≤ d
-      · rw [min_eq_left]; exact modD
+      · rwa [min_eq_left]
         rw [Int.neg_emod, ite_cond_eq_false, Int.natAbs_natCast]
         omega; simp only [eq_iff_iff, iff_false]; intro h'
         rw [hd] at h'; push_cast at h'; revert h
@@ -63,8 +70,7 @@ theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
     split_ifs at hxy with h1 h2 h3
     -- If $d$ divides both $a_x$ and $a_y$, then it is easy to see $D$ divides $a_x + a_y$ and $a_x - a_y$
     · right; rw [Int.dvd_iff_emod_eq_zero]
-      rw [← Int.emod_eq_emod_iff_emod_sub_eq_zero]
-      exact hxy
+      rwa [← Int.emod_eq_emod_iff_emod_sub_eq_zero]
     -- If $d$ divides $a_x$ but not $a_y$, we will prove that $d$ divides $a_y$, which is a contradiction
     · exfalso; revert h2; simp
       rcases h1 with ⟨k, hk⟩; rw [hk, hd] at hxy
@@ -94,12 +100,12 @@ theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
     · by_cases a y % D ≤ -a y % D
       · repeat rw [min_eq_left] at hxy
         right; rw [Int.dvd_iff_emod_eq_zero]
-        rw [Int.emod_eq_emod_iff_emod_sub_eq_zero] at hxy
-        exact hxy; all_goals assumption
+        rwa [Int.emod_eq_emod_iff_emod_sub_eq_zero] at hxy
+        all_goals assumption
       left; rw [min_eq_left, min_eq_right] at hxy
       rw [Int.dvd_iff_emod_eq_zero, ← sub_neg_eq_add]
-      rw [← Int.emod_eq_emod_iff_emod_sub_eq_zero]
-      exact hxy; all_goals omega
+      rwa [← Int.emod_eq_emod_iff_emod_sub_eq_zero]
+      all_goals omega
     by_cases a y % D ≤ -a y % D
     · rw [min_eq_right, min_eq_left] at hxy
       left; rw [Int.dvd_iff_emod_eq_zero, add_comm, ← sub_neg_eq_add]
@@ -107,8 +113,8 @@ theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
       exact hxy; all_goals omega
     right; repeat rw [min_eq_right] at hxy
     rw [← Int.dvd_neg, Int.dvd_iff_emod_eq_zero]
-    rw [neg_sub',← Int.emod_eq_emod_iff_emod_sub_eq_zero]
-    exact hxy; all_goals omega
+    rwa [neg_sub',← Int.emod_eq_emod_iff_emod_sub_eq_zero]
+    all_goals omega
 -- On the other hand, we take any $n$ satisfying the condition and $n < d + 2$ and find a contradiction
   intro n hn; by_contra! nlt
 -- Specialize `hn` to the sequence of numbers $t - 1$ for $t$ in $[1, n]$ and revert `hn`
@@ -120,7 +126,7 @@ theorem problem18 (D : ℕ) (Dpos : 0 < D) (Dpar : Even D) :
   · specialize @this D Dpos d hd n nlt j jge jle i ige ile
     specialize this (by omega) (by omega)
     rw [add_comm]; nth_rw 2 [← Int.dvd_neg]
-    rw [neg_sub]; exact this
+    rwa [neg_sub]
   constructor
   · intro h; rw [show (1:ℤ) = (1:ℕ) by rfl] at h
     repeat rw [← Nat.cast_sub] at h

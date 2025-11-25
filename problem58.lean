@@ -75,17 +75,17 @@ theorem problem58 (f : ℤ[X]) (fne : ∀ a, f ≠ C a) :
     · convert fne; simp only [eq_intCast, ne_eq, false_iff, not_forall, Decidable.not_not]
       use 0; apply eq_of_infinite_eval_eq
       suffices : {x | eval x f = eval x (0 : ℤ)} = (fun a => eval a f) ⁻¹' {0}
-      · rw [this]; exact h
+      · rwa [this]
       simp [Set.ext_iff]
     · convert fne; simp only [eq_intCast, ne_eq, false_iff, not_forall, Decidable.not_not]
       use 1; apply eq_of_infinite_eval_eq
       suffices : {x | eval x f = eval x (1 : ℤ)} = (fun a => eval a f) ⁻¹' {1}
-      · rw [this]; exact h
+      · rwa [this]
       simp [Set.ext_iff]
     convert fne; simp only [eq_intCast, ne_eq, false_iff, not_forall, Decidable.not_not]
     use -1; apply eq_of_infinite_eval_eq
     suffices : {x | eval x f = eval x (-1 : ℤ)} = (fun a => eval a f) ⁻¹' {-1}
-    · rw [this]; exact h
+    · rwa [this]
     simp [Set.ext_iff]
 -- Prove that $k^2$ divides $f(w*k^2)-k$ for any $w$
   have aux : ∀ w, k ^ 2 ∣ f.eval (w * k ^ 2) - k := by
@@ -111,8 +111,8 @@ theorem problem58 (f : ℤ[X]) (fne : ∀ a, f ≠ C a) :
       suffices : Set.image (fun w => w * k ^ 2) ((fun w => eval (w * k ^ 2) f) ⁻¹' {k}) ⊆
       {x | eval x f = eval x k}
       · apply Set.Infinite.mono this
-        rw [Set.infinite_image_iff]
-        exact h'; apply Function.Injective.injOn
+        rwa [Set.infinite_image_iff]
+        apply Function.Injective.injOn
         intro i j hij; simp only [mul_eq_mul_right_iff, ne_eq, OfNat.ofNat_ne_zero,
           not_false_eq_true, pow_eq_zero_iff] at hij
         rcases hij with _|_
@@ -123,8 +123,8 @@ theorem problem58 (f : ℤ[X]) (fne : ∀ a, f ≠ C a) :
       suffices : Set.image (fun w => w * k ^ 2) ((fun w => eval (w * k ^ 2) f) ⁻¹' {-k}) ⊆
       {x | eval x f = eval x (-k : ℤ)}
       · apply Set.Infinite.mono this
-        rw [Set.infinite_image_iff]
-        exact h'; apply Function.Injective.injOn
+        rwa [Set.infinite_image_iff]
+        apply Function.Injective.injOn
         intro i j hij; simp only [mul_eq_mul_right_iff, ne_eq, OfNat.ofNat_ne_zero,
           not_false_eq_true, pow_eq_zero_iff] at hij
         rcases hij with _|_
@@ -135,8 +135,8 @@ theorem problem58 (f : ℤ[X]) (fne : ∀ a, f ≠ C a) :
     suffices : Set.image (fun w => w * k ^ 2) ((fun w => eval (w * k ^ 2) f) ⁻¹' {0}) ⊆
     {x | eval x f = eval x (0 : ℤ)}
     · apply Set.Infinite.mono this
-      rw [Set.infinite_image_iff]
-      exact h'; apply Function.Injective.injOn
+      rwa [Set.infinite_image_iff]
+      apply Function.Injective.injOn
       intro i j hij; simp only [mul_eq_mul_right_iff, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
         pow_eq_zero_iff] at hij
       rcases hij with _|_

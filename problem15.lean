@@ -1,11 +1,19 @@
+/-
+Copyright (c) 2025 . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bingyu Xia
+-/
+
 import Mathlib
 
 open Finset
 
-/- Given any set $S$ of positive integers, show that at least one of the following two assertions holds:  (1) There exist distinct finite subsets $F$ and $G$ of $S$ such that $\sum_{x \in F} 1 / x=\sum_{x \in G} 1 / x$;  (2) There exists a positive rational number $r<1$ such that $\sum_{x \in F} 1 / x \neq r$ for all finite subsets $F$ of $S$. -/
+/- Given any set $S$ of positive integers, show that at least one of the following two assertions holds:
+(1) There exist distinct finite subsets $F$ and $G$ of $S$ such that $\sum_{x \in F} 1 / x=\sum_{x \in G} 1 / x$;
+(2) There exists a positive rational number $r<1$ such that $\sum_{x \in F} 1 / x \neq r$ for all finite subsets $F$ of $S$. -/
 theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
-    (∃ F G : Finset ℕ, F.toSet ⊆ S ∧ G.toSet ⊆ S ∧ F ≠ G ∧ ∑ x ∈ F, (1 : ℚ) / x =
-    ∑ x ∈ G, (1 : ℚ) / x) ∨ ∃ r : ℚ, 0 < r ∧ r < 1 ∧ ∀ F : Finset ℕ, F.toSet ⊆ S →
+    (∃ F G : Finset ℕ, SetLike.coe F ⊆ S ∧ SetLike.coe G ⊆ S ∧ F ≠ G ∧ ∑ x ∈ F, (1 : ℚ) / x =
+    ∑ x ∈ G, (1 : ℚ) / x) ∨ ∃ r : ℚ, 0 < r ∧ r < 1 ∧ ∀ F : Finset ℕ, SetLike.coe F ⊆ S →
     ¬ ∑ x ∈ F, (1 : ℚ) / x = r := by
 -- Prove by contradiction, assume neither of the two claims hold true
   by_contra!; rcases this with ⟨h1, h2⟩
@@ -20,7 +28,8 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     rw [sub_eq_iff_eq_add'] at hqr; constructor
     · intro hx; rw [sum_eq_sum_diff_singleton_add hx] at q_sum
       nth_rw 2 [hqr] at q_sum; apply add_right_cancel at q_sum
-      suffices : F r rpos rlt = F q qpos qlt \ {x}; simp [this]
+      suffices : F r rpos rlt = F q qpos qlt \ {x}
+      · simp [this]
       by_contra!; revert q_sum; rw [imp_false, ← r_sum]
       rw [← ne_eq]; apply Ne.symm; apply h1
       any_goals assumption
@@ -31,8 +40,7 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     suffices : F q qpos qlt = F r rpos rlt ∪ {x}; simp [this]
     by_contra!; revert hqr; rw [imp_false]
     apply h1; any_goals assumption
-    · simp only [coe_union, coe_singleton, Set.union_singleton]
-      exact Set.insert_subset xmem sbst_r
+    · simpa using Set.insert_subset xmem sbst_r
     exact disjoint_singleton_right.mpr hx
 -- Prove the key lemma that for any $x$ in $S$ and any positive rational number $r$ less than $1$, $x$ belongs to $F_r$ if and only if $⌊r * x⌋$ is odd
   have key2 : ∀ x ∈ S, ∀ r : ℚ, ∀ rpos : 0 < r, ∀ rlt : r < 1,
@@ -47,7 +55,7 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
       rw [sum_eq_add_sum_diff_singleton h] at r_sum
       rw [← r_sum] at rlt; simp at rlt
       revert rlt; rw [imp_false, not_lt]
-      positivity; exact ⟨by linarith only [rpos], rlt⟩
+      positivity; grind
     have xpos := Spos x xmem
   -- Denote $⌊r * x⌋$ by $n$
     set n := ⌊r * x⌋ with hn; clear_value n
@@ -64,8 +72,9 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
         intro k hk; simp only [mem_Ico] at hk; constructor
         · apply div_pos; simp only [Nat.cast_pos]
           omega; positivity
-        rw [div_lt_iff₀, one_mul]; simp
-        exact hk.right; positivity
+        rw [div_lt_iff₀, one_mul]
+        simpa using hk.right
+        positivity
     -- Prove that if $x≠1$, $x$ belongs to $F_(1/x)$
       have mem_inv : x ∈ F ((1 : ℚ) / x) (aux 1 (by simp; omega)).left (aux 1 (by simp; omega)).right := by
         have : x ∈ ({x} : Finset ℕ) := by simp
@@ -74,7 +83,7 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
         rcases hF with ⟨sbst, h⟩; revert h
         rw [imp_false, ← ne_eq]; symm; specialize h1 {x}
         simp only [sum_singleton] at h1; apply h1
-        · simp only [coe_singleton, Set.singleton_subset_iff]; exact xmem
+        · simpa using xmem
         · exact sbst
         symm; exact h
     -- Prove by induction that if $2*k+1$ is an odd number in $[0, x)$, then $x$ belongs to $F_((2 * k + 1) / x)$
@@ -125,8 +134,8 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
         rw [Int.natAbs_add_of_nonneg, Int.natAbs_mul] at hk
         simp only [Int.reduceAbs, isUnit_one, Int.natAbs_of_isUnit] at hk
         simp only [← hn, hk]; apply odd_mem
-        simp only [mem_Ico, le_add_iff_nonneg_left, zero_le,true_and]; rw [← hk]
-        zify; rw [abs_eq_self.mpr nge]; exact rlt
+        simp only [mem_Ico, le_add_iff_nonneg_left, zero_le,true_and]
+        rw [← hk]; zify; rwa [abs_eq_self.mpr nge]
         positivity; simp
       contrapose!; intro npar; rw [Int.not_odd_iff_even] at npar
       rcases npar with ⟨k, hk⟩; rw [← two_mul] at hk
@@ -144,13 +153,13 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     have aux : ∀ k ∈ Icc 0 n, 0 < r - k / x ∧ r - k / x < 1 := by
       intro k hk; simp only [mem_Icc] at hk; constructor
       · rw [sub_pos, div_lt_iff₀]; calc
-          _ ≤ (n : ℚ) := by simp only [Int.cast_le]; exact hk.right
+          _ ≤ (n : ℚ) := by simpa using hk.right
           _ < _ := hn.left
-        simp only [Nat.cast_pos]; exact xpos
+        simpa using xpos
       calc
         _ ≤ r := by
           apply sub_le_self; apply div_nonneg
-          simp only [Int.cast_nonneg]; exact hk.left
+          simpa using hk.left
           positivity
         _ < _ := rlt
   -- Prove that $x$ does not belong to $F_(r - n / x)$ since $r - n / x$ is less than $1 / x$
@@ -161,8 +170,8 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
         rw [← n_sum]; apply le_add_of_nonneg_left
         positivity
       revert n_sum; rw [imp_false, not_le, ← sub_pos]
-      field_simp; apply div_pos
-      linarith only [hn.right]; positivity
+      field_simp; simp only [zero_mul, sub_pos]
+      linarith only [hn.right]
   -- Prove that $x$ belongs to $F (r - (n - (2 * k + 1)) / x)$ for all $k$ such that $n - (2 * k + 1)$ is in $[0, n]$
     have odd_mem : ∀ k, ∀ hk : (n - (2 * k + 1)) ∈ Icc 0 n,
     x ∈ F (r - (n - (2 * k + 1)) / x) (by convert (aux _ hk).left; push_cast; rfl) (by convert (aux _ hk).right; push_cast; rfl) := by
@@ -181,7 +190,7 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     have even_nmem : ∀ k, ∀ hk : (n - 2 * k) ∈ Icc 0 n,
     x ∉ F (r - (n - 2 * k) / x) (by convert (aux _ hk).left; push_cast; rfl) (by convert (aux _ hk).right; push_cast; rfl) := by
       intro k hk; induction' k with k ih
-      · simp only [Int.cast_zero, mul_zero, sub_zero]; exact n_nmem
+      · simpa using n_nmem
       simp only [mem_Icc, Int.sub_nonneg, tsub_le_iff_right, le_add_iff_nonneg_right, Nat.ofNat_pos,
         mul_nonneg_iff_of_pos_left] at hk
       specialize ih (by simp; omega); specialize aux (n - (2 * k + 1)) (by simp; omega)
@@ -198,13 +207,13 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     · intro npar; rcases npar with ⟨k, hk⟩
       specialize odd_mem k (by simp only [hk, sub_self, mem_Icc, le_refl, true_and]; omega)
       simp only [hk] at odd_mem; push_cast at odd_mem
-      simp only [sub_self, zero_div, sub_zero] at odd_mem; exact odd_mem
+      simpa using odd_mem
     contrapose!; rw [Int.not_odd_iff_even]
     rintro ⟨k, hk⟩; rw [← two_mul] at hk
     specialize even_nmem k (by simp only [hk, sub_self, mem_Icc, le_refl, Nat.ofNat_pos,
       mul_nonneg_iff_of_pos_left, true_and]; omega)
     simp only [hk] at even_nmem; push_cast at even_nmem
-    simp only [sub_self, zero_div, sub_zero] at even_nmem; exact even_nmem
+    simpa using even_nmem
 -- With the help of `key2`, we can derive a contradiction by studying $F_(2 / 3)$
   obtain ⟨sbst, hsum⟩ := hF (2 / 3) (by positivity) (by norm_num)
   simp only [Set.subset_def, mem_coe] at sbst
@@ -213,7 +222,7 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     norm_num [h] at hsum
   let f : ℕ → ℚ := fun i => Int.fract ((2 : ℚ) / 3 * i) / i
   replace nem : (image f (F (2 / 3) (by positivity) (by norm_num))).Nonempty := by
-    rw [image_nonempty]; exact nem
+    rwa [image_nonempty]
 -- Take $m$ to be the smallest $(2 / 3 * i - ⌊2 / 3 * i⌋) / i$ for $i$ in $F_(2 / 3)$
   let m := min' (image f (F (2 / 3) (by positivity) (by norm_num))) nem
 -- Prove that $m$ is positive
@@ -227,11 +236,11 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
       rw [Nat.mul_mod_right, Nat.mul_mod] at h
       simp only [Nat.reduceMod, one_mul, dvd_refl, Nat.mod_mod_of_dvd] at h
       specialize key2 x (sbst _ xmem) (2 / 3) (by positivity) (by norm_num)
-      replace key2 : Odd ⌊(2 : ℚ) / 3 * x⌋ := by
-        rw [← key2]; exact xmem
+      replace key2 : Odd ⌊(2 : ℚ) / 3 * x⌋ := by rwa [← key2]
       rw [Int.odd_iff] at key2; field_simp at key2
       norm_cast at key2; omega
-    simp only [Nat.cast_pos]; apply Spos; apply sbst; exact xmem
+    simp only [Nat.cast_pos]; apply Spos
+    apply sbst; exact xmem
 -- Prove that $m$ is less than $2 / 3$
   have mlt : m < 2 / 3 := by
     rcases nem with ⟨y, hy⟩; apply lt_of_le_of_lt (min'_le _ _ hy)
@@ -240,11 +249,11 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
     rw [Int.fract, ← sub_pos]; ring_nf
     field_simp; norm_cast
     specialize key2 x (sbst _ xmem) (2 / 3) (by positivity) (by norm_num)
-    replace key2 : Odd ⌊(2 : ℚ) / 3 * x⌋ := by
-      rw [← key2]; exact xmem
+    replace key2 : Odd ⌊(2 : ℚ) / 3 * x⌋ := by rwa [← key2]
     rw [Int.odd_iff] at key2; field_simp at key2
     norm_cast at key2; omega
-    simp only [Nat.cast_pos]; apply Spos; apply sbst; exact xmem
+    simp only [Nat.cast_pos]; apply Spos
+    apply sbst; exact xmem
 -- Prove that $⌊((2 : ℚ) / 3 - m / 2) * x⌋ = ⌊(2 : ℚ) / 3 * x⌋$ for all $x$ in $F_(2 / 3)$
   have ptb : ∀ x ∈ F (2 / 3) (by positivity) (by norm_num), ⌊((2 : ℚ) / 3 - m / 2) * x⌋ =
   ⌊(2 : ℚ) / 3 * x⌋ := by
@@ -254,9 +263,10 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
         _ ≤ m := by linarith only [mpos]
         _ ≤ _ := by
           apply min'_le; rw [mem_image]; use x
-          rw [← Int.fract]; dsimp [f]
-          exact ⟨xmem, by rfl⟩
-      simp only [Nat.cast_pos]; apply Spos; apply sbst; exact xmem
+          rw [← Int.fract]
+          simpa [f]
+      simp only [Nat.cast_pos]; apply Spos
+      apply sbst; exact xmem
     calc
       _ ≤ _ := sub_le_self ((2 : ℚ) / 3 * x) (by positivity)
       _ < _ := by apply Int.lt_floor_add_one
@@ -264,12 +274,13 @@ theorem problem15 (S : Set ℕ) (Spos : ∀ n ∈ S, 0 < n) :
   suffices : F (2 / 3) (by positivity) (by norm_num) ⊆ F (2 / 3 - m / 2) (by linarith) (by linarith)
   · have hsum' := (hF (2 / 3 - m / 2) (by linarith) (by linarith)).right
     rw [← sum_sdiff this, hsum] at hsum'
-    revert hsum'; rw [imp_false]; apply ne_of_gt; calc
+    revert hsum'; rw [imp_false]
+    apply ne_of_gt; calc
       _ < (2 : ℚ) / 3 := by linarith only [mpos]
       _ ≤ _ := by
         simp only [le_add_iff_nonneg_left]
         apply sum_nonneg; intros; positivity
 -- Apply `ptb` to prove $F_(2 / 3)$ is a subset of $F_(2 / 3 - m / 2)$, which finishes the goal
-  intro x hx; have : x ∈ S := by apply sbst; exact hx
-  rw [key2 x this, ptb x hx, ← key2 x this]
-  exact hx
+  intro x hx
+  have : x ∈ S := by apply sbst; exact hx
+  rwa [key2 x this, ptb x hx, ← key2 x this]

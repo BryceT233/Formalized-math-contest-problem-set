@@ -19,7 +19,7 @@ theorem problem61 (P : ℤ[X]) : (∀ p u v, Prime p → p ∣ u * v - 1
         apply_fun fun t => t.natDegree at this
         rw [natDegree_mul, natDegree_X_pow] at this
         omega; exact Pne
-        simp only [ne_eq, reverse_eq_zero]; exact Pne
+        simpa using Pne
       rw [natDegree_eq_zero] at degrevP
       rcases degrevP with ⟨a, ha⟩
       let aeq := this; apply_fun fun t => t.eval 1 at aeq
@@ -27,9 +27,9 @@ theorem problem61 (P : ℤ[X]) : (∀ p u v, Prime p → p ∣ u * v - 1
         Int.mul_eq_one_iff_eq_one_or_neg_one, Int.reduceNeg] at aeq
       rcases aeq with ⟨_, aeq⟩|⟨_, aeq⟩
       · left; simp only [aeq, eq_intCast, Int.cast_one] at ha
-        simp only [← ha, mul_one] at this; exact this
+        simpa [← ha] using this
       right; simp only [aeq, Int.reduceNeg, eq_intCast, Int.cast_neg, Int.cast_one] at ha
-      simp only [← ha, mul_neg, mul_one, neg_eq_iff_eq_neg] at this; exact this
+      simpa [← ha, neg_eq_iff_eq_neg] using this
   -- Prove the polynomial equality by showing that they have the same evaluation on all nonzero numbers
     apply Polynomial.eq_of_infinite_eval_eq
     suffices : {0}ᶜ ⊆ {x | eval x (P * P.reverse) = eval x (X ^ P.natDegree)}

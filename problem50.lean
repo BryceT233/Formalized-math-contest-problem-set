@@ -39,14 +39,16 @@ theorem problem50 : IsGreatest {n : ℕ | ∃ S : Finset ℕ, n = #S ∧
     · apply Nat.div_le_of_le_mul; rw [← one_mul x]
       apply mul_le_mul; apply Nat.one_le_pow
       all_goals grind
-    by_contra!; replace this : 2 ∣ x / 2 ^ padicValNat 2 x := by omega
+    by_contra!
+    replace this : 2 ∣ x / 2 ^ padicValNat 2 x := by omega
     rw [dvd_iff_padicValNat_ne_zero, padicValNat.div_pow] at this
     simp only [tsub_self, ne_eq, not_true_eq_false] at this
     exact pow_padicValNat_dvd
     simp only [ne_eq, Nat.div_eq_zero_iff, Nat.pow_eq_zero, OfNat.ofNat_ne_zero,
       padicValNat.eq_zero_iff, OfNat.ofNat_ne_one, Nat.two_dvd_ne_zero, false_or, not_or,
       Nat.mod_two_not_eq_one, false_and, not_lt]
-    apply Nat.le_of_dvd; omega; exact pow_padicValNat_dvd
+    apply Nat.le_of_dvd; omega
+    · exact pow_padicValNat_dvd
   have clt : (filter (fun n => n % 2 = 1) (Icc 1 100)).card < #S := by norm_cast
 -- We get two numbers $x≠y$ in $S$ such that $f(x)=f(y)$, assume w. l. o. g. that $x < y$
   obtain ⟨x, xmem, y, ymem, xney, hxy⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to clt fmapsto
@@ -55,11 +57,14 @@ theorem problem50 : IsGreatest {n : ℕ | ∃ S : Finset ℕ, n = #S ∧
     grind
 -- Prove that $x$ divides $y$, which contradicts to the divisibility assumption `hdvd`
   revert hdvd; simp only [imp_false, not_forall, Decidable.not_not, exists_prop]
-  use x; constructor; exact xmem; use y
-  split_ands; exact ymem; exact xney
+  use x; constructor
+  · exact xmem
+  use y; split_ands
+  · exact ymem
+  · exact xney
 -- Use `aux` to rewrite `xlty`, the goal will follow
   simp only [f] at hxy; rw [aux x, aux y, hxy] at xlty
-  rw [mul_lt_mul_right, pow_lt_pow_iff_right₀] at xlty
+  rw [mul_lt_mul_iff_left₀, pow_lt_pow_iff_right₀] at xlty
   rw [aux x, aux y, hxy, mul_dvd_mul_iff_right]
   apply pow_dvd_pow; any_goals omega
   all_goals

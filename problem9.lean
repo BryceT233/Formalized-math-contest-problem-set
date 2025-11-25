@@ -1,9 +1,3 @@
-/-
-Copyright (c) 2025 . All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bingyu Xia
--/
-
 import Mathlib
 
 open Finset
@@ -38,7 +32,7 @@ theorem problem9 (u : ℕ) (upos : u ≠ 0) : (setOf (fun (a, b, n) => Nat.facto
   -- Since $u≠1$, we can take an odd prime $p$ who does not divide $u$
     obtain ⟨p, ppr, ppar, pndvd⟩ : ∃ p, p.Prime ∧ p % 2 = 1 ∧ ¬ p ∣ u := by
       have h := Nat.infinite_setOf_prime
-      have h' : (u.primeFactors ∪ {2}).toSet.Finite := by
+      have h' : (SetLike.coe (u.primeFactors ∪ {2})).Finite := by
         apply finite_toSet
       obtain ⟨p, hp⟩ := (h.diff h').nonempty
       simp at hp; rcases hp with ⟨ppr, ppar, pndvd⟩
@@ -101,7 +95,7 @@ theorem problem9 (u : ℕ) (upos : u ≠ 0) : (setOf (fun (a, b, n) => Nat.facto
       _ ≤ ∑ x ∈ Ioo 1 m, n / p ^ x + n / p := by simp
       _ ≤ _ := by
         simp only [pv_eq, add_le_add_iff_left]; apply padicValNat_le_nat_log
-    rw [add_comm, ← lm, ← Nat.pow_le_iff_le_log] at pv_eq
+    rw [add_comm, ← lm, Nat.le_log_iff_pow_le] at pv_eq
     rw [← mul_le_mul_iff_right₀ spos, ← mul_assoc] at pv_eq
     rw [Nat.mul_div_cancel' auxdvd, ← Nat.pow_le_pow_iff_right (show 1<u by omega)] at pv_eq
   -- Prove that the inequality we get contradicts to `hN`, which finishes the goal
