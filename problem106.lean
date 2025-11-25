@@ -36,7 +36,8 @@ theorem problem106 {p a q} (hp : p = (0 < a ∧ StrictMonoOn (fun x => logb a x)
     clear h; push_neg at h'; specialize hpos (-a / 2)
     ring_nf at hpos; replace hpos : a ^ 2 < 2 ^ 2 := by linarith
     rw [sq_lt_sq] at hpos; norm_num at hpos
-    rw [abs_lt] at hpos; left; constructor; exact hpos.left
+    rw [abs_lt] at hpos; left; constructor
+    · exact hpos.left
   -- Prove that $logb a x$ is increasing on $(0, +∞)$
     by_contra!; specialize h' (by linarith)
     convert h'; simp only [false_iff, not_not]
@@ -46,7 +47,7 @@ theorem problem106 {p a q} (hp : p = (0 < a ∧ StrictMonoOn (fun x => logb a x)
 -- Conversely, assume $a$ has the given bounds, the goal consists of $4$ subgoals
   intro h; constructor <;> rcases h with ⟨agt, ale⟩|age
   -- In the first case, we can show that $x^2+a*x+1$ is always positive
-  · right; intro x; rw [← mul_lt_mul_left (show 0<(4:ℝ) by norm_num)]
+  · right; intro x; rw [← mul_lt_mul_iff_right₀ (show 0<(4:ℝ) by norm_num)]
     rw [show 4*(x^2+a*x+1) = (2*x+a)^2+(2^2-a^2) by ring, mul_zero]
     have : 0 ≤ (2 * x + a) ^ 2 := by positivity
     have : 0 < 2 ^ 2 - a ^ 2 := by

@@ -41,17 +41,17 @@ theorem problem105 (x : ℕ → ℝ) (x1 : x 1 = 1 / 2)
     rw [show (1:ℝ) = ∏ i ∈ Icc 1 n, 1 by simp]
     apply prod_lt_prod_of_nonempty
     any_goals simp only [mem_Icc, and_imp]; grind
-    use 1; simp only [mem_Icc, le_refl, true_and]; exact nge
+    use 1; simpa using nge
 -- Prove that $1/P_n$ has a telescoping sum property
   have Ptele : ∀ n ≥ 2, 1 / P n - 1 / P (n - 1) = 1 / (1 - P (n - 1)) := by
     intro n nge; dsimp [P]; nth_rw 1 [show n = n-1+1 by omega]
     rw [prod_Icc_succ_top, hx, sub_eq_iff_eq_add]
     rw [div_add_div, one_mul, mul_one, add_sub_cancel]; ring
-    suffices : ∏ i ∈ Icc 1 (n - 1), x i < 1; linarith only [this]
-    specialize Plt (n-1) (by omega)
-    dsimp [P] at Plt; exact Plt
-    specialize Ppos (n-1) (by omega)
-    dsimp [P] at Ppos; linarith only [Ppos]
+    suffices : ∏ i ∈ Icc 1 (n - 1), x i < 1
+    · linarith only [this]
+    simpa [P] using Plt (n-1) (by omega)
+    · specialize Ppos (n-1) (by omega)
+      dsimp [P] at Ppos; linarith only [Ppos]
     all_goals omega
 -- As a corollary of `Ptele`, we can rewrite $P_n$ as a sum of $1/(1-P_j)$ with $j< n$
   have hP : ∀ n ≥ 2, 1 / P n = 1 / P 2 + ∑ j ∈ Icc 2 (n - 1), 1 / (1 - P j) := by
@@ -71,8 +71,7 @@ theorem problem105 (x : ℕ → ℝ) (x1 : x 1 = 1 / 2)
   · norm_num [hx]; suffices : 100 < 1 / P 99
     · dsimp [P] at this; rw [lt_div_iff₀] at this
       linarith only [this]
-      specialize Ppos 99 (by simp); dsimp [P] at Ppos
-      exact Ppos
+      · simpa [P] using Ppos 99 (by simp)
   -- Use `hP` to rewrite $1/P_99$ and prove that every terms in the summation of the RHS is greater than $1$
     rw [hP, P2, one_div_one_div]; calc
       _ < (4 : ℝ) + ∑ i ∈ Icc 2 (99 - 1), 1 := by norm_num
@@ -107,7 +106,8 @@ theorem problem105 (x : ℕ → ℝ) (x1 : x 1 = 1 / 2)
       gcongr with i hi
       · rw [sub_pos, div_lt_iff₀, one_mul]
         norm_cast; omega; positivity
-      apply Ple; simp only [mem_Icc] at hi; exact hi.left
+      apply Ple; simp only [mem_Icc] at hi
+      exact hi.left
     _ = (4 : ℝ) + ∑ j ∈ Icc (2 : ℕ) 98, (1 + 1 / ((j : ℝ) + 1)) := by
       congr 1; apply sum_congr rfl
       intro i hi; field_simp; ring_nf

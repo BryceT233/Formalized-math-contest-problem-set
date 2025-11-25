@@ -27,10 +27,11 @@ theorem problem103 {x y} : x ^ 2 + x = y ^ 4 + y ^ 3 + y ^ 2 + y ↔
         dsimp [f]; qify at h; rw [h]
         rw [← sub_pos]; ring_nf; positivity
       have lt2 : f x < f (y ^ 2 + y / 2) := by
-        dsimp [f]; qify at h; rw [h]
-        rw [← sub_pos]; cancel_denoms; ring_nf; field_simp
-        rw [mul_assoc]; gcongr
-        norm_cast; omega
+        dsimp [f]; qify at h
+        rw [h, ← sub_pos]
+        field_simp; ring_nf
+        rw [← sub_eq_neg_add, sub_pos, pow_two]
+        gcongr; norm_cast
       rw [fmono.lt_iff_lt] at lt1 lt2
     -- Discuss when $y$ is even or odd, we find that in both cases, $x$ is strictly between two integers, which is impossible
       rcases Nat.even_or_odd' y with ⟨k, hk|hk⟩

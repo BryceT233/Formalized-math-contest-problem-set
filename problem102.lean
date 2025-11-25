@@ -116,8 +116,7 @@ theorem problem102 (a b c : ℤ) (ane : a ≠ 0) (bne : b ≠ 0) (cne : c ≠ 0)
   have : Fact (p.Prime) := ⟨ppr⟩
   have dvd1 : (p : ℤ) ∣ a ^ 2 * c + a * b ^ 2 + b * c ^ 2 := by
     rw [← aux]; repeat apply dvd_mul_of_dvd_left
-    rw [← Int.natAbs_dvd_natAbs, Int.natAbs_natCast]
-    exact pdvd
+    rwa [← Int.natAbs_dvd_natAbs, Int.natAbs_natCast]
   have : p ∣ b.natAbs ∨ p ∣ c.natAbs := by
     rw [dvd_add_right, ← Int.natAbs_dvd_natAbs, Int.natAbs_natCast] at dvd1
     rw [Int.natAbs_mul, Int.natAbs_pow, ppr.dvd_mul] at dvd1

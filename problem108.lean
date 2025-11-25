@@ -94,7 +94,7 @@ theorem problem108 : #{a ∈ image (fun n => n ^ n) (Icc 1 2020) | IsSquare a} =
         rw [ht] at mle; rw [← pow_le_pow_iff_left₀ _ _ (show 2≠0 by simp)] at this
         norm_num [pow_two] at this; omega
         all_goals simp
-      rw [← h, Nat.div_add_mod, pow_two, ← ht]; exact hm
+      rwa [← h, Nat.div_add_mod, pow_two, ← ht]
     rw [← pow_two] at hr; rw [hr] at hm; clear * - mge hm h
     have rne : r ≠ 0 := by intro h; simp [h] at hm
     use ∏ p ∈ m.primeFactors, p ^ (m.factorization p / 2)
@@ -103,8 +103,7 @@ theorem problem108 : #{a ∈ image (fun n => n ^ n) (Icc 1 2020) | IsSquare a} =
     simp only [Finsupp.prod, Nat.support_factorization]; apply prod_congr rfl
     intro p pmem; rw [← pow_mul, Nat.div_mul_cancel]
     replace h : Nat.Coprime 2 m := by
-      simp only [Nat.coprime_two_left]
-      exact Nat.odd_iff.mpr h
+      simpa [Nat.coprime_two_left] using Nat.odd_iff.mpr h
     rw [← Nat.Coprime.dvd_mul_left h]
     let hp := pmem; simp only [Nat.mem_primeFactors, ne_eq] at hp
     have : Fact (p.Prime) := ⟨hp.left⟩
@@ -114,5 +113,4 @@ theorem problem108 : #{a ∈ image (fun n => n ^ n) (Icc 1 2020) | IsSquare a} =
     exact hp.left; any_goals exact rne
     omega
 -- This computes the cardinality of $s2$ and finishes the goal
-  rw [← f2img, card_image_of_injective _ f2mono.injective]
-  norm_num
+  simp [← f2img, card_image_of_injective _ f2mono.injective]

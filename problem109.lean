@@ -16,7 +16,8 @@ lemma lm (a m n : ℕ) (agt : 1 < a) (mpos : 0 < m) (npos : 0 < n) :
   · rw [Nat.gcd_comm]; nth_rw 2 [Nat.gcd_comm]
     apply this; any_goals assumption
     exact fun a => h (id (Eq.symm a)); omega
-  set M' := m ⊔ n with hM; have hM1 : m ≤ M' := by simp [M']
+  set M' := m ⊔ n with hM
+  have hM1 : m ≤ M' := by simp [M']
   have hM2 : n ≤ M' := by simp [M']
   generalize M' = M at hM1 hM2; clear M' hM h; revert m n
   induction M using Nat.strong_induction_on with
@@ -55,11 +56,11 @@ theorem problem109 (p : ℕ) (ppr : Nat.Prime p) :
   have hA : A = ∑ i ∈ range p, p ^ i := by
     have aux := geom_sum_mul (p:ℤ) p
     have : (p : ℤ) - 1 = (p - 1 : ℕ) := by
-      rw [Nat.cast_sub]; rfl; exact ppr.one_le
+      rw [Nat.cast_sub ppr.one_le, Nat.cast_one]
     rw [this] at aux; replace this : (p : ℤ) ^ p - 1 =
     (p ^ p - 1 : ℕ) := by
-      rw [Nat.cast_sub]; push_cast; rfl
-      apply Nat.one_le_pow; exact ppr.pos
+      rw [Nat.cast_sub, Nat.cast_pow, Nat.cast_one]
+      exact Nat.one_le_pow _ _ ppr.pos
     rw [this] at aux; norm_cast at aux
     dsimp [A]; rw [← aux, Nat.mul_div_cancel]; omega
 -- Prove that $A$ is at least $2$
@@ -88,8 +89,8 @@ theorem problem109 (p : ℕ) (ppr : Nat.Prime p) :
   obtain ⟨q, qpr, qdvd, hq⟩ : ∃ q, q.Prime ∧ q ∣ A ∧ ¬ q ≡ 1 [MOD p ^ 2] := by sorry
   have := qpr.two_le
   have qdvd' : q ∣ p ^ p - 1 := by
-    apply dvd_trans qdvd; dsimp [A]
-    exact Nat.div_dvd_of_dvd auxdvd
+    apply dvd_trans qdvd
+    simpa [A] using Nat.div_dvd_of_dvd auxdvd
 -- Prove that $q$ is not equal to $p$
   have qnep : q ≠ p := by
     intro h; rw [hA, h] at qdvd
@@ -102,7 +103,8 @@ theorem problem109 (p : ℕ) (ppr : Nat.Prime p) :
     have h : q ∣ p ^ (q - 1) - 1 := by
       rw [← Nat.modEq_iff_dvd', Nat.ModEq.comm]
       rw [← Nat.totient_prime qpr]; apply Nat.ModEq.pow_totient
-      rw [Nat.coprime_primes ppr qpr]; exact id (Ne.symm qnep)
+      symm at qnep
+      rwa [Nat.coprime_primes ppr qpr]
       apply Nat.one_le_pow; omega
     have hgcd := Nat.dvd_gcd qdvd' h
     rw [lm] at hgcd; have : 0 < p.gcd (q - 1) := by
